@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite the paper and the Zenodo archive."
+title: "Selection Navigates a Degenerate Circuit Space: code and distilled agents"
+type: software
+authors:
+  - family-names: Khetan
+    given-names: Pranet
+    affiliation: "Shiv Nadar School, India"
+  - family-names: Asopa
+    given-names: Aditya
+    affiliation: "Anthriq, India"
+    orcid: "https://orcid.org/0000-0002-3487-0333"
+repository-code: "https://github.com/pranetkhetan/constrained-neuroevolution"
+license: MIT
+keywords:
+  - neural degeneracy
+  - neuroevolution
+  - Dale's Law
+  - mouse navigation
+  - behavioral individuality
+  - functional sensitivity
+preferred-citation:
+  type: article
+  title: "Selection navigates a degenerate circuit space: behavioral individuation without structural differentiation in constrained neuroevolution"
+  authors:
+    - family-names: Khetan
+      given-names: Pranet
+    - family-names: Asopa
+      given-names: Aditya
+  year: 2026
+  doi: "[BIORXIV-DOI]"
+identifiers:
+  - type: doi
+    value: "[ZENODO-DOI]"
+    description: "Zenodo archive: full evolved-agent runs and per-frame activations"

@@ -1,0 +1,12 @@
+# Normalise line endings for text; treat data/figure binaries as binary.
+* text=auto
+
+*.pkl  binary
+*.npy  binary
+*.pdf  binary
+*.png  binary
+*.svg  binary
+
+# NOTE: shipped *.pkl/*.npy are small (the repo is ~70 MB total) and are tracked as
+# regular git objects — intentionally NOT Git LFS, to avoid LFS bandwidth limits on
+# clone. The large Tier-2 archive is on Zenodo (see README), not in git.

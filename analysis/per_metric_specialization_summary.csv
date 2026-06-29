@@ -1,0 +1,6 @@
+metric,own_mean,other_mean,ratio
+markov,0.2162,0.2884,0.7495
+occupancy,0.1283,0.2161,0.5940
+tortuosity,0.0320,0.0461,0.6934
+turn_bias,0.0268,0.0670,0.3999
+total,0.7478,1.1221,0.6664

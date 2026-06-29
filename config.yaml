@@ -1,0 +1,44 @@
+# Experiment parameters
+experiment:
+  name: "mouse_navigation"
+  seed: 42
+
+population:
+  size: 500
+  elite_fraction: 0.1
+
+simulation:
+  max_frames: 2000
+  n_bouts: 20
+
+network:
+  n_interneurons: 6
+  weights: [0.25, 1.0]  # Magnitudes only; Dale's Law (node_types) determines sign
+  max_incoming: 3
+  max_outgoing: 3
+
+mutation:
+  weight_rate: 0.10
+  structure_rate: 0.10
+  node_type_rate: 0.10
+  schedule:
+    enabled: true
+    start_rate: 0.15
+    end_rate: 0.01
+    end_gen: 200
+
+physics:
+  max_speed: 1.949
+  max_turn_rate: 1.191
+  alpha_speed: 0.263
+  alpha_turn: 0.437
+  momentum_alpha: 0.1 # deprecated
+
+fitness:
+  markov: {enabled: true, weight: 2.0}
+  occupancy: {enabled: true, weight: 2.0}
+  tortuosity: {enabled: true, weight: 1.0}
+  turn_bias: {enabled: true, weight: 1.0}
+
+output:
+  dir: "results"

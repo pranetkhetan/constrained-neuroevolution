@@ -1,0 +1,42 @@
+Degeneracy analyses — consolidated results
+Generated: 2026-06-06 07:30:28.878855
+
+
+A1
+  rho_all: 0.001
+  p_all: 0.966
+  rho_within: -0.026
+  p_within: 0.765
+  rho_between: 0.008
+  p_between: 0.764
+  mw_beh_p: 0.000
+
+A2
+  rho_topo: 0.034
+  p_topo: 0.696
+  rho_mag: 0.045
+  p_mag: 0.601
+  partial_rho_topo_given_mag: -0.018
+  partial_p_topo_given_mag: 0.835
+  partial_rho_mag_given_topo: 0.035
+  partial_p_mag_given_topo: 0.685
+
+A4
+  mw_p: 0.529
+  mantel_rho: -0.044
+  mantel_p_parametric: 0.093
+  mantel_p_permutation: 0.357
+
+A5
+  rho_rand: -0.029
+  p_rand: 0.270
+  mw_within_between_p: 0.998
+
+A3
+  Topology: MI=0.2116  NMI=0.1373
+  Magnitude: MI=0.2857  NMI=0.1906
+  Sign (E/I): MI=0.1332  NMI=0.0831
+
+A6
+  mw_p_gen_spec_topo: 0.856
+  gen_mean_fitness_cost_pct: 43.08
