@@ -549,12 +549,10 @@ def _build_core(bag: StatBag) -> None:
     bag.add("generalist", "fitness_max",            float(gen_fits.max()),   _fmt(gen_fits.max(), 3))
     bag.add("generalist", "fitness_mean",           float(gen_fits.mean()),  _fmt(gen_fits.mean(), 3))
     bag.add("generalist", "specialist_fitness_mean",spec_mean_fit,           _fmt(spec_mean_fit, 3))
-    bag.add("generalist", "gen_cost_min_pct",
-            (gen_fits.min() / spec_mean_fit - 1) * 100,
-            _fmt((gen_fits.min() / spec_mean_fit - 1) * 100, 0))
-    bag.add("generalist", "gen_cost_max_pct",
-            (gen_fits.max() / spec_mean_fit - 1) * 100,
-            _fmt((gen_fits.max() / spec_mean_fit - 1) * 100, 0))
+    # Note: per-mouse generalist cost is reported from the A6 analysis
+    # (\statDegAsixMinCostPct / \statDegAsixMaxCostPct / \statDegAsixCostRatioOfMeans),
+    # which uses the per-mouse specialist reference. The old aggregate
+    # gen_cost_min/max_pct macros (pooled spec mean) were stale and unused in v2.
 
     # =========================================================================
     # A2 deltafit decomposition
@@ -705,6 +703,24 @@ def _build_core(bag: StatBag) -> None:
     bag.add("holdout", "total_bouts",       total_bouts,           str(total_bouts))
     bag.add("holdout", "mean_bouts_total",   mean_bouts_total,     str(mean_bouts_total))
     bag.add("holdout", "mean_bouts_holdout", mean_bouts_holdout,   str(mean_bouts_holdout))
+
+    # =========================================================================
+    # individuation foundation test (real-mouse bout-fold distinguishability)
+    # analysis/individuation_results.pkl, from scripts/analyze_individuation.py
+    # =========================================================================
+    indiv_path = ANALYSIS / "individuation_results.pkl"
+    if indiv_path.exists():
+        iv = _load(indiv_path)
+        iv_cF = iv["per_component"]["combined_F"]
+        iv_cls = iv["classification"]
+        bag.add("individuation", "within_dist",  iv_cF["within"],  _fmt(iv_cF["within"], 3))
+        bag.add("individuation", "between_dist", iv_cF["between"], _fmt(iv_cF["between"], 3))
+        bag.add("individuation", "mw_p",         iv_cF["mw_p"],    _fmt_p(iv_cF["mw_p"]))
+        bag.add("individuation", "rank_biserial",iv_cF["rank_biserial"], _fmt(iv_cF["rank_biserial"], 3))
+        bag.add("individuation", "class_acc_pct", iv_cls["acc"] * 100.0, _fmt(iv_cls["acc"] * 100.0, 0))
+        bag.add("individuation", "chance_pct",    iv_cls["chance"] * 100.0, _fmt(iv_cls["chance"] * 100.0, 0))
+        bag.add("individuation", "class_p",       iv_cls["p"],      _fmt_p(iv_cls["p"]))
+        bag.add("individuation", "n_folds",       iv["n_folds"],    str(iv["n_folds"]))
 
     # =========================================================================
     # phase3: random permutation, generalist formal, power
@@ -942,6 +958,54 @@ def _build_degeneracy() -> tuple[list[str], list[str]]:
     A6_gen_topo_mean  = float(np.mean(A6_gen_topo_sims))
     A6_spec_topo_mean = float(np.mean(A6_spec_topo_sims))
 
+    # ------------------------------------------------------------------
+    # Referee-audit robustness statistics for the sensitivity-commitment
+    # (Claim 24) and generalist-cost (Claim 23) results. Formulas ported
+    # verbatim from review/scripts/r1_*.py and r3_*.py so the macros are
+    # regenerable and verifiable (seed=1, deterministic bootstrap).
+    # ------------------------------------------------------------------
+    SS6 = _load(ANALYSIS / "source_sensitivity_results.pkl")
+    sens_norm6 = np.asarray(SS6["sensitivity_matrix"], float)      # (54,14)
+    labels6    = np.asarray(SS6["labels"])
+    gen_norm6  = np.asarray(A6["gen_sensitivity_norm"], float)     # (6,14)
+
+    # (a) Principled within-mouse-pooled variance ratio (text-matches-number fix).
+    A6_var_within_per = np.stack(
+        [sens_norm6[labels6 == m].var(axis=0, ddof=1) for m in MICE])  # (9,14)
+    A6_sv_within = A6_var_within_per.mean(axis=0)
+    A6_gv_ddof1  = gen_norm6.var(axis=0, ddof=1)
+    A6_var_ratio_within = float(A6_sv_within.mean() / A6_gv_ddof1.mean())
+
+    # (b) Mouse-level primary test (mouse = independent unit; fixes pseudoreplication).
+    A6_mouse_scalars = np.array(
+        [sens_norm6[labels6 == m].var(axis=0, ddof=1).mean() for m in MICE])
+    A6_gen_scalar    = float(A6_gv_ddof1.mean())
+    A6_mouse_n_pos   = int((A6_mouse_scalars > A6_gen_scalar).sum())
+    A6_mouse_wilcox_p = float(
+        _scipy_stats.wilcoxon(A6_mouse_scalars - A6_gen_scalar, alternative="greater").pvalue)
+
+    # (c) Hierarchical bootstrap CI on the ratio (n=6 generalists; magnitude uncertainty).
+    _rng6 = np.random.default_rng(1)
+    _by_mouse6 = {m: sens_norm6[labels6 == m] for m in MICE}
+    _boot = np.empty(10000)
+    for _b in range(10000):
+        _drawn = _rng6.choice(MICE, size=9, replace=True)
+        _svs = []
+        for _m in _drawn:
+            _sub = _by_mouse6[_m]
+            _svs.append(_sub[_rng6.integers(0, _sub.shape[0], _sub.shape[0])].var(0, ddof=1))
+        _gmean = gen_norm6[_rng6.integers(0, 6, 6)].var(0, ddof=1).mean()
+        _boot[_b] = np.mean(np.stack(_svs), 0).mean() / _gmean if _gmean > 1e-12 else np.nan
+    _boot = _boot[np.isfinite(_boot)]
+    A6_var_boot_median = float(np.median(_boot))
+    A6_var_boot_ci_lo, A6_var_boot_ci_hi = (float(x) for x in np.percentile(_boot, [2.5, 97.5]))
+
+    # (d) Generalist cost: ratio-of-means (stable) vs the published mean-of-ratios.
+    A6_gen_mean_per_mouse = np.asarray(A6["gen_mean_per_mouse"], float)
+    A6_spec_ref_a6 = A6_gen_mean_per_mouse / (1.0 + A6_gen_cost_pct / 100.0)
+    A6_cost_ratio_of_means = float(
+        (A6_gen_mean_per_mouse.mean() - A6_spec_ref_a6.mean()) / A6_spec_ref_a6.mean() * 100.0)
+
     # ---- emit ----
     tex.append("% -- A1: Topology-behavior flatness --")
     emit("statDegAoneRhoAll",     _fmt(A1_rho_all, 3),     "Spearman rho (topo vs beh dist), all pairs")
@@ -1006,9 +1070,9 @@ def _build_degeneracy() -> tuple[list[str], list[str]]:
     emit("statDegAsixMwTopoP",         _fmt_p(A6_mw_p_topo),       "MW p: gen vs spec topology similarity")
     emit("statDegAsixGenTopoMean",     _fmt(A6_gen_topo_mean, 3),  "mean topology cosine similarity, generalists")
     emit("statDegAsixSpecTopoMean",    _fmt(A6_spec_topo_mean, 3), "mean topology cosine similarity, specialists")
-    emit("statDegAsixMeanCostPct",     _fmt(A6_mean_cost_pct, 1),  "mean generalist fitness cost pct")
-    emit("statDegAsixGenPerfPct",      _fmt(100.0 - A6_mean_cost_pct, 0),
-         "generalist performance as pct of specialist (100 - mean cost); derived complement")
+    emit("statDegAsixMeanCostPct",     _fmt(A6_mean_cost_pct, 1),  "mean-of-ratios generalist fitness cost pct (per-mouse mean)")
+    emit("statDegAsixCostRatioOfMeans", _fmt(A6_cost_ratio_of_means, 1),
+         "ratio-of-means generalist fitness cost pct (stable summary; primary)")
     emit("statDegAsixMinCostPct",      _fmt(A6_min_cost_pct, 1),   "min per-mouse generalist fitness cost pct")
     emit("statDegAsixMaxCostPct",      _fmt(A6_max_cost_pct, 1),   "max per-mouse generalist fitness cost pct")
     emit("statDegAsixHardestMouse",    A6_hardest_mouse,             "mouse with highest generalist fitness cost")
@@ -1021,6 +1085,19 @@ def _build_degeneracy() -> tuple[list[str], list[str]]:
         emit("statDegAsixVarRatio", ">9999", "sensitivity variance ratio (gen var near zero)")
     emit("statDegAsixVarMwP", _fmt_p(A6_var_mw_p),
          "MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each")
+    # Referee-audit robustness macros (ported from review r1)
+    emit("statDegAsixVarRatioWithin", _fmt(A6_var_ratio_within, 1),
+         "sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)")
+    emit("statDegAsixVarBootMedian", _fmt(A6_var_boot_median, 1),
+         "hierarchical-bootstrap median sensitivity variance ratio (seed=1)")
+    emit("statDegAsixVarBootCiLo", _fmt(A6_var_boot_ci_lo, 2),
+         "hierarchical-bootstrap 2.5pct sensitivity variance ratio")
+    emit("statDegAsixVarBootCiHi", _fmt(A6_var_boot_ci_hi, 2),
+         "hierarchical-bootstrap 97.5pct sensitivity variance ratio")
+    emit("statDegAsixMouseNPos", str(A6_mouse_n_pos),
+         "n mice (of 9) with sensitivity variance > generalist (mouse-level unit)")
+    emit("statDegAsixMouseWilcoxP", _fmt_p(A6_mouse_wilcox_p),
+         "one-sample Wilcoxon p, mouse-level sensitivity commitment (primary statistic)")
 
     return tex, txt
 
@@ -1084,6 +1161,21 @@ def _build_claim28() -> tuple[list[str], list[str]]:
 
     _, p_mw = _scipy_stats.mannwhitneyu(within_arr, between_arr, alternative="two-sided")
 
+    # Pseudoreplication-aware label-permutation test (ported from review r2): the
+    # 135/1296 agent-pairs share agents and are not independent, so the MW p is
+    # anticonservative. Permute mouse labels and recompute the within-between mean gap.
+    iu, ju = np.triu_indices(n, 1)
+    cvals = np.array([cosine_sim(sens_g150[i], sens_g150[j]) for i, j in zip(iu, ju)])
+    same_obs = labels[iu] == labels[ju]
+    obs_gap = cvals[same_obs].mean() - cvals[~same_obs].mean()
+    _perm_rng = np.random.default_rng(1)
+    _null = np.empty(10000)
+    for _k in range(10000):
+        _perm = _perm_rng.permutation(labels)
+        _s = _perm[iu] == _perm[ju]
+        _null[_k] = cvals[_s].mean() - cvals[~_s].mean()
+    p_perm = float(np.mean(np.abs(_null) >= abs(obs_gap)))
+
     tex.append("")
     tex.append("% -- Claim 28: sensitivity convergence (nb18, gen 150 pairwise) --")
     emit("statClaimTwentyEightWithinSim",  _fmt(within_mean, 2),
@@ -1091,7 +1183,9 @@ def _build_claim28() -> tuple[list[str], list[str]]:
     emit("statClaimTwentyEightBetweenSim", _fmt(between_mean, 2),
          "between-mouse pairwise cosine sim at gen 150 (1296 pairs)")
     emit("statClaimTwentyEightMwP",        _fmt_p(p_mw),
-         "MW p: within < between cosine sim (two-sided)")
+         "MW p: within < between cosine sim (two-sided; anticonservative, pseudoreplicated)")
+    emit("statClaimTwentyEightPermP",      _fmt_p(p_perm),
+         "label-permutation p (pseudoreplication-aware); Claim-28 gap n.s. under proper test")
 
     return tex, txt
 

@@ -147,11 +147,13 @@ def _sensitivity_variance_panel(ax, A6: dict) -> None:
     ax.hlines(np.mean(spec_var), -0.25, 0.25, color=EVOLVED_COL, lw=2.0 * LW_SCALE, zorder=4)
     ax.hlines(np.mean(gen_var),   0.75, 1.25, color=GEN_COL,     lw=2.0 * LW_SCALE, zorder=4)
 
-    # Annotate ratio + MW p-value
+    # Annotate ratio + MW p-value. Report to one decimal (the ':.0f' rounding
+    # mis-displayed 2.58x as "3x"); the caption gives the 2.2-2.6x range and the
+    # mouse-level primary test.
     ratio = np.mean(spec_var) / np.mean(gen_var)
     _, p_mw = mannwhitneyu(spec_var, gen_var, alternative="greater")
     ax.text(0.5, 0.97,
-            f"Ratio: {ratio:.0f}x  ({sig_label(p_mw)})",
+            f"Ratio: {ratio:.1f}x  ({sig_label(p_mw)})",
             transform=ax.transAxes, ha="center", va="top",
             fontsize=FS_ANNOT, fontweight="bold", color="#CC0000")
 

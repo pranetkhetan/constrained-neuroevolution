@@ -225,8 +225,6 @@
 \newcommand{\statGeneralistFitnessMax}{0.988}
 \newcommand{\statGeneralistFitnessMean}{0.921}
 \newcommand{\statGeneralistSpecialistFitnessMean}{0.748}
-\newcommand{\statGeneralistGenCostMinPct}{9}
-\newcommand{\statGeneralistGenCostMaxPct}{32}
 % ----- decomposition -----
 \newcommand{\statDecompositionMeanOwn}{2.530}
 \newcommand{\statDecompositionMeanGen}{2.238}
@@ -282,6 +280,15 @@
 \newcommand{\statHoldoutTotalBouts}{1777}
 \newcommand{\statHoldoutMeanBoutsTotal}{197}
 \newcommand{\statHoldoutMeanBoutsHoldout}{99}
+% ----- individuation -----
+\newcommand{\statIndividuationWithinDist}{0.448}
+\newcommand{\statIndividuationBetweenDist}{0.629}
+\newcommand{\statIndividuationMwP}{<0.001}
+\newcommand{\statIndividuationRankBiserial}{0.694}
+\newcommand{\statIndividuationClassAccPct}{87}
+\newcommand{\statIndividuationChancePct}{11}
+\newcommand{\statIndividuationClassP}{<0.001}
+\newcommand{\statIndividuationNFolds}{6}
 % ----- phase3a -----
 \newcommand{\statPhaseThreeaEvolRatio}{0.658}
 \newcommand{\statPhaseThreeaRandRatio}{0.328}
@@ -399,8 +406,8 @@
 \newcommand{\statDegAsixMwTopoP}{0.856}  % MW p: gen vs spec topology similarity
 \newcommand{\statDegAsixGenTopoMean}{0.276}  % mean topology cosine similarity, generalists
 \newcommand{\statDegAsixSpecTopoMean}{0.268}  % mean topology cosine similarity, specialists
-\newcommand{\statDegAsixMeanCostPct}{43.1}  % mean generalist fitness cost pct
-\newcommand{\statDegAsixGenPerfPct}{57}  % generalist performance as pct of specialist (100 - mean cost); derived complement
+\newcommand{\statDegAsixMeanCostPct}{43.1}  % mean-of-ratios generalist fitness cost pct (per-mouse mean)
+\newcommand{\statDegAsixCostRatioOfMeans}{42.1}  % ratio-of-means generalist fitness cost pct (stable summary; primary)
 \newcommand{\statDegAsixMinCostPct}{28.8}  % min per-mouse generalist fitness cost pct
 \newcommand{\statDegAsixMaxCostPct}{81.3}  % max per-mouse generalist fitness cost pct
 \newcommand{\statDegAsixHardestMouse}{D8}  % mouse with highest generalist fitness cost
@@ -409,6 +416,12 @@
 \newcommand{\statDegAsixGenSensVarMean}{0.089}  % mean sensitivity variance per neuron, generalists (normalized)
 \newcommand{\statDegAsixVarRatio}{2.6}  % sensitivity variance ratio: specialist / generalist (normalized)
 \newcommand{\statDegAsixVarMwP}{0.003}  % MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each
+\newcommand{\statDegAsixVarRatioWithin}{2.2}  % sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)
+\newcommand{\statDegAsixVarBootMedian}{2.1}  % hierarchical-bootstrap median sensitivity variance ratio (seed=1)
+\newcommand{\statDegAsixVarBootCiLo}{1.02}  % hierarchical-bootstrap 2.5pct sensitivity variance ratio
+\newcommand{\statDegAsixVarBootCiHi}{7.36}  % hierarchical-bootstrap 97.5pct sensitivity variance ratio
+\newcommand{\statDegAsixMouseNPos}{9}  % n mice (of 9) with sensitivity variance > generalist (mouse-level unit)
+\newcommand{\statDegAsixMouseWilcoxP}{0.002}  % one-sample Wilcoxon p, mouse-level sensitivity commitment (primary statistic)
 
 % ============================================================
 % Block 3 — claim 28: sensitivity convergence (nb18)
@@ -418,7 +431,8 @@
 % -- Claim 28: sensitivity convergence (nb18, gen 150 pairwise) --
 \newcommand{\statClaimTwentyEightWithinSim}{0.20}  % within-mouse pairwise cosine sim at gen 150 (135 pairs)
 \newcommand{\statClaimTwentyEightBetweenSim}{0.24}  % between-mouse pairwise cosine sim at gen 150 (1296 pairs)
-\newcommand{\statClaimTwentyEightMwP}{0.040}  % MW p: within < between cosine sim (two-sided)
+\newcommand{\statClaimTwentyEightMwP}{0.040}  % MW p: within < between cosine sim (two-sided; anticonservative, pseudoreplicated)
+\newcommand{\statClaimTwentyEightPermP}{0.076}  % label-permutation p (pseudoreplication-aware); Claim-28 gap n.s. under proper test
 
 % ============================================================
 % Block 4 — activity embedding macros (§2.7, nb20)

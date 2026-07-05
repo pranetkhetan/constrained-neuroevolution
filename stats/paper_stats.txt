@@ -231,8 +231,6 @@ Human-readable companion to stats/paper_stats.tex.
   fitness_max                  = 0.988
   fitness_mean                 = 0.921
   specialist_fitness_mean      = 0.748
-  gen_cost_min_pct             = 9
-  gen_cost_max_pct             = 32
 
 ## decomposition
   mean_own                     = 2.530
@@ -295,6 +293,16 @@ Human-readable companion to stats/paper_stats.tex.
   total_bouts                  = 1777
   mean_bouts_total             = 197
   mean_bouts_holdout           = 99
+
+## individuation
+  within_dist                  = 0.448
+  between_dist                 = 0.629
+  mw_p                         = <0.001
+  rank_biserial                = 0.694
+  class_acc_pct                = 87
+  chance_pct                   = 11
+  class_p                      = <0.001
+  n_folds                      = 6
 
 ## phase3a
   evol_ratio                   = 0.658
@@ -406,8 +414,8 @@ statDegAfiveMwWithinP = 0.998  # MW p: within vs between beh dist, random agents
 statDegAsixMwTopoP = 0.856  # MW p: gen vs spec topology similarity
 statDegAsixGenTopoMean = 0.276  # mean topology cosine similarity, generalists
 statDegAsixSpecTopoMean = 0.268  # mean topology cosine similarity, specialists
-statDegAsixMeanCostPct = 43.1  # mean generalist fitness cost pct
-statDegAsixGenPerfPct = 57  # generalist performance as pct of specialist (100 - mean cost); derived complement
+statDegAsixMeanCostPct = 43.1  # mean-of-ratios generalist fitness cost pct (per-mouse mean)
+statDegAsixCostRatioOfMeans = 42.1  # ratio-of-means generalist fitness cost pct (stable summary; primary)
 statDegAsixMinCostPct = 28.8  # min per-mouse generalist fitness cost pct
 statDegAsixMaxCostPct = 81.3  # max per-mouse generalist fitness cost pct
 statDegAsixHardestMouse = D8  # mouse with highest generalist fitness cost
@@ -416,11 +424,18 @@ statDegAsixSpecSensVarMean = 0.230  # mean sensitivity variance per neuron, spec
 statDegAsixGenSensVarMean = 0.089  # mean sensitivity variance per neuron, generalists (normalized)
 statDegAsixVarRatio = 2.6  # sensitivity variance ratio: specialist / generalist (normalized)
 statDegAsixVarMwP = 0.003  # MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each
+statDegAsixVarRatioWithin = 2.2  # sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)
+statDegAsixVarBootMedian = 2.1  # hierarchical-bootstrap median sensitivity variance ratio (seed=1)
+statDegAsixVarBootCiLo = 1.02  # hierarchical-bootstrap 2.5pct sensitivity variance ratio
+statDegAsixVarBootCiHi = 7.36  # hierarchical-bootstrap 97.5pct sensitivity variance ratio
+statDegAsixMouseNPos = 9  # n mice (of 9) with sensitivity variance > generalist (mouse-level unit)
+statDegAsixMouseWilcoxP = 0.002  # one-sample Wilcoxon p, mouse-level sensitivity commitment (primary statistic)
 
 ## Block 3 — claim 28: sensitivity convergence (nb18)
 statClaimTwentyEightWithinSim = 0.20  # within-mouse pairwise cosine sim at gen 150 (135 pairs)
 statClaimTwentyEightBetweenSim = 0.24  # between-mouse pairwise cosine sim at gen 150 (1296 pairs)
-statClaimTwentyEightMwP = 0.040  # MW p: within < between cosine sim (two-sided)
+statClaimTwentyEightMwP = 0.040  # MW p: within < between cosine sim (two-sided; anticonservative, pseudoreplicated)
+statClaimTwentyEightPermP = 0.076  # label-permutation p (pseudoreplication-aware); Claim-28 gap n.s. under proper test
 
 ## Block 4 — activity embedding macros (§2.7, nb20)
 statActEmbMotorDist = 0.583  # mean speed-vs-turn motor distance in PC1-2 (54 agents)

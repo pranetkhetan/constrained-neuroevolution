@@ -63,10 +63,6 @@
 % -- Abstract ----------------------------------------------------------------
 \begin{abstract}
 \noindent
-%%% TO BE WRITTEN LAST.
-%%% Structure: degeneracy framing (1 sentence) | system (1 sentence) |
-%%% Level 1-2 result (1 sentence) | Level 3-4 result (1 sentence) |
-%%% implication (1 sentence).
 Neural degeneracy, the capacity of structurally distinct circuits to perform
 the same function, is typically studied as an emergent property of biological
 neural systems. Here we impose it by construction, engineering the conditions
@@ -83,14 +79,15 @@ structural axis carries significant information about behavioral identity
 (maximum NMI $= \statDegAthreeNmiMax$). Yet behavioral individuation is robust: cross-mouse fitness error is $\statCrossMouseSpecGapPct$\% higher
 than own-mouse error, and this specialization persists on held-out data. We
 show that what individual-target selection shapes is not circuit structure but
-functional sensitivity commitment: specialists develop
-$\statDegAsixVarRatio\times$ higher sensitivity variance than generalists
-trained on all mice simultaneously, despite exploring statistically
-indistinguishable topological diversity. Critically, this functional commitment is itself degenerate:
-replicates of the same mouse achieve equivalent specialization through different
-sensitivity profiles, confirming that degeneracy operates not just at the
-structural level but at the level of the computational strategies that implement
-individual behavior.
+the strength of functional sensitivity commitment: specialists develop roughly
+$\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$ higher sensitivity variance than generalists
+trained on all mice simultaneously ($\statDegAsixMouseNPos$/9 mice, mouse-level
+$p = \statDegAsixMouseWilcoxP$), despite exploring statistically
+indistinguishable topological diversity. The particular pathways a circuit commits
+to are not individually consistent, so behavioral individuation is expressed as a
+magnitude of functional commitment rather than a mouse-specific structural or
+pathway signature---degeneracy that operates not just at the structural level but
+at the level of the computational strategies that implement individual behavior.
 \end{abstract}
 
 \vspace{1em}
@@ -142,12 +139,21 @@ must implement and allows the fitness function to track each individual's
 behavioral signature directly.
 
 Neural degeneracy is the ability of structurally distinct elements to perform
-the same function \citep{edelman2001degeneracy, marder2006variability}. Here we
-use the term in a broadened sense that also encompasses its complement---%
-structurally indistinguishable circuits supporting distinct individual
-outputs---a regime adjacent to what \citet{albantakis2024degeneracy} term
-plurifunctionality. It is a fundamental organizational principle of biological
-nervous systems. In naturally
+the same function \citep{edelman2001degeneracy, marder2006variability}. In this
+system degeneracy operates at two levels. With respect to \emph{competence}
+(navigational fitness), the mapping is classically many-to-one: many structurally
+distinct circuits are each a sufficient substrate for the same function---being a
+fit navigator---so any circuit selection can reach within the constrained space
+navigates well. With respect to \emph{identity} (which individual mouse a circuit
+was selected to replicate), structure is degenerate in a stronger sense: identity
+leaves no signature on any structural axis, even though the behaviors themselves
+differ. Individual specialisation is real but structurally invisible; it is carried
+functionally, not structurally. This identity-level regime is adjacent to---but
+distinct from---what \citet{albantakis2024degeneracy} term plurifunctionality (a
+single structure supporting \emph{multiple distinct} functions): here each circuit
+implements one individual's behavior, and what is degenerate is the mapping from
+structure to identity, not the number of functions per circuit. Degeneracy is a
+fundamental organizational principle of biological nervous systems. In naturally
 evolved circuits, degeneracy is difficult to study in isolation because
 structural variation, developmental noise, and evolutionary history co-vary.
 Our constrained system offers a different entry point: the architectural
@@ -177,14 +183,14 @@ $\statDynamicsPermOverReplicate\times$, and this disruption is mouse-specific.
 But topological variation is degenerate with respect to behavioral identity;
 any topology drawn from the constrained space provides a sufficient
 computational substrate, and none is uniquely identifying. What
-individual-target selection shapes instead is committed functional sensitivity:
-specialists develop $\statDegAsixVarRatio\times$ higher sensitivity variance
-than generalists trained on all mice simultaneously, despite exploring
-statistically indistinguishable topological diversity. Critically, this functional commitment is
-itself degenerate: replicates of the same mouse achieve equivalent behavioral
-specialization through distinct sensitivity profiles. Selection navigates a
-degenerate space to produce individual-specific function without leaving a
-legible structural trace.
+individual-target selection shapes instead is the strength of functional sensitivity
+commitment: specialists develop roughly $\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$
+higher sensitivity variance than generalists trained on all mice simultaneously, despite
+exploring statistically indistinguishable topological diversity. The particular pathways
+a circuit commits to are not individually consistent across replicates, so individuation
+is carried by the magnitude of commitment rather than a specific pathway signature.
+Selection navigates a degenerate space to produce individual-specific function without
+leaving a legible structural trace.
 
 
 % ============================================================================
@@ -219,6 +225,10 @@ Beyond the four fitness components, evolved agents reproduced behavioral propert
 not explicitly selected for (Supplementary Figure~\ref{fig:supp_emergent}). Speed
 distributions showed the characteristic slow-fast pattern of real mice: slow
 exploratory phases interspersed with fast directed traversals (Figure~\ref{fig:system}E).
+The overall speed \emph{scale} is partly set by the momentum constants
+($\alpha_v$, $v_\text{max}$, $\omega_\text{max}$), which are fixed from each mouse's
+trajectory statistics (Methods); the emergent property is the temporal \emph{patterning}
+of slow and fast phases, which the fitness function does not target directly.
 Evolved agents also reproduced the turn rate distributions of their target mouse
 (Figure~\ref{fig:system}F) and showed wall contact fractions consistent with
 thigmotaxis (Supplementary Figure~\ref{fig:supp_emergent}), all without explicit
@@ -237,12 +247,13 @@ Supplementary Figure~\ref{fig:supp_networks_per_mouse}.
 
 Excitatory-inhibitory balance revealed a functional dissociation within this
 architecture. The speed motor neuron converged to a strongly excitatory-dominated
-regime (E/(E+I) $\approx \statEiBalanceSpeedMean$) uniformly across all 9 mice, consistent with an
+regime (mean E/(E+I) $\approx \statEiBalanceSpeedMean$) uniformly across all 9 mice, consistent with an
 open-loop tonic drive. The turn motor neuron converged to a more balanced ratio
-($\approx \statEiBalanceTurnMedian$) with greater variability between mice, consistent with
-closed-loop control in which inhibitory feedback modulates turning direction,
-an organisation analogous to push-pull motor circuits in biological locomotion
-\citep{kiehn2006locomotor} (Figure~\ref{fig:system}H;
+(mean $\approx \statEiBalanceTurnMean$) with greater variability between mice, consistent with
+closed-loop control in which inhibitory input modulates turning direction. Given that
+each motor is a single 2-input readout with E/(E+I) restricted to $\{0, \tfrac{1}{3}, \tfrac{2}{3}, 1\}$,
+we read this only as loose analogy to the push-pull organisation of biological locomotor
+circuits \citep{kiehn2006locomotor} (Figure~\ref{fig:system}H;
 Supplementary Figure~\ref{fig:supp_ei_dynamics} for the full temporal evolution).
 This dissociation is an
 emergent internal property of the evolved networks: it was not specified by the fitness
@@ -281,8 +292,8 @@ starting point for the degeneracy analysis that follows.
   circuits are sparser, more feedforward, and use stronger connections than random agents.
   (H)~E/I balance at generation 150 for all 8 non-sensory neurons ($54 \times 8$
   heatmap, agents ordered by mouse; white lines separate mouse groups). Speed motor (Spd)
-  converges uniformly to $\approx\statEiBalanceSpeedMean$ excitatory across all mice;
-  turn motor (Trn) converges to $\approx\statEiBalanceTurnMedian$ with greater
+  converges uniformly to mean $\approx\statEiBalanceSpeedMean$ excitatory across all mice;
+  turn motor (Trn) converges to mean $\approx\statEiBalanceTurnMean$ with greater
   variability, consistent with closed-loop inhibitory modulation of turning.}
   \label{fig:system}
 \end{figure}
@@ -359,7 +370,7 @@ produces specialisation. Specialisation persists on held-out trajectory data
 (Supplementary Analysis~\ref{sec:supp_holdout}).
 Specialisation emerges progressively with individual-target training: the population mean
 specialisation index rises from $\statSpecEvolSpecInit$ at generation~1 to
-$\statCrossMouseSpecIndex$ at generation~150 (Figure~\ref{fig:paradox}E), while
+$\statSpecEvolSpecFinal$ at generation~150 (Figure~\ref{fig:paradox}E), while
 generalist agents trained simultaneously on all nine mice remain near zero throughout
 (mean $|\text{bias}|$ at generation~150: $\statSpecEvolGenFinal$). Per-mouse trajectories
 are shown in Supplementary Figure~\ref{fig:supp_spec_evol_per_mouse}.
@@ -713,17 +724,18 @@ commits to particular pathways. Specialist agents show high, varied sensitivity
 ($\bar{\sigma}^2 = \statDegAsixSpecSensVarMean$ per neuron): individual-target
 training produces circuits that are each strongly committed to perturbations of
 specific pathways, but which pathways vary across replicates, even within the
-same mouse: within-mouse sensitivity profiles are significantly \emph{less}
-similar to each other than to profiles from a different mouse (pairwise cosine
-similarity within-mouse $\statClaimTwentyEightWithinSim$ versus between-mouse
-$\statClaimTwentyEightBetweenSim$; Mann-Whitney $p = \statClaimTwentyEightMwP$),
-so replicates of the same mouse commit to distinct pathways rather than
-converging on a shared subset. Degeneracy thus operates even within a single
-behavioral target: replicates of the same mouse are no more aligned in
-sensitivity space than agents trained on different mice---indeed marginally
-\emph{more} idiosyncratic---ruling out a shared, mouse-specific pathway
-signature. Selection builds the strength of functional commitment, not convergence to
-specific pathways. Generalist agents show substantially lower sensitivity variance
+same mouse. Consistent with the RSA null above
+(Supplementary Figure~\ref{fig:supp_sensitivity_rsa}), within-mouse sensitivity
+profiles are no more similar to each other than to profiles from a different mouse:
+at generation~150 the pairwise cosine similarity is if anything marginally lower
+within-mouse ($\statClaimTwentyEightWithinSim$) than between-mouse
+($\statClaimTwentyEightBetweenSim$), but this small gap does not survive a
+pseudoreplication-aware test (label-permutation $p = \statClaimTwentyEightPermP$;
+the naive Mann-Whitney $p = \statClaimTwentyEightMwP$ treats the
+non-independent agent-pairs as independent and is anticonservative). We therefore do
+not claim that replicates commit to \emph{distinct} pathways; the defensible reading is
+that no shared, mouse-specific pathway signature emerges. Selection builds the strength
+of functional commitment, not convergence to specific pathways. Generalist agents show substantially lower sensitivity variance
 ($\bar{\sigma}^2 = \statDegAsixGenSensVarMean$; ratio
 $= \statDegAsixVarRatio\times$; per-neuron Mann-Whitney $p = \statDegAsixVarMwP$,
 one-sided, $n = 14$ neurons per group; Figure~\ref{fig:sensitivity_commitment}C),
@@ -745,9 +757,11 @@ to specialists where own-mouse degradation is unanimous
 disrupted like a specialist evaluated on its wrong mouse: partially calibrated to
 everyone, fully calibrated to none.
 
-The fitness cost confirms that generalists do not simply fail to converge: a mean
-cost of $\statDegAsixMeanCostPct$\% implies generalists achieve ${\sim}\statDegAsixGenPerfPct$\% of
-specialist performance on average, confirming clear behavioral learning. The low
+The fitness cost confirms that generalists do not simply fail to converge: relative
+to the per-mouse specialist fitness (mean of replicates), generalist error is higher
+by $\statDegAsixCostRatioOfMeans$\% on a ratio-of-means basis (per-mouse range
+$\statDegAsixMinCostPct$--$\statDegAsixMaxCostPct$\%), yet they still reproduce each
+mouse's behaviour well above chance, confirming clear behavioral learning. The low
 sensitivity variance is therefore not underfitting: it reflects the fact that
 generalist replicates, each having learned a working solution, show weaker and
 more distributed sensitivity to pathway perturbations, with no strong commitment
@@ -768,11 +782,12 @@ onward, while within-mouse sensitivity profiles diverge from a shared baseline a
 circuits become mouse-committed (Supplementary Figure~\ref{fig:supp_sens_commitment_evo}).
 
 What individual-target selection shapes is therefore not a distinctive topology, but
-a committed functional sensitivity structure: high sensitivity variance across replicates,
-with the specific committed pathways varying freely. Behavioral individuation in this
-constrained system is thus encoded in functional sensitivity, not in circuit structure,
-and this functional encoding is itself degenerate: the same behavioral specialization
-can be achieved through distinct sensitivity commitments.
+the \emph{strength} of a circuit's functional sensitivity commitment: specialists develop
+higher sensitivity variance across replicates than generalists, while the RSA null
+(Supplementary Figure~\ref{fig:supp_sensitivity_rsa}) shows that the specific committed
+pathways are not individually consistent. Behavioral individuation in this constrained
+system is thus expressed as a magnitude of functional commitment, not as a distinctive
+circuit structure or a mouse-specific pathway signature.
 
 \begin{figure}[H]
   \centering
@@ -787,8 +802,13 @@ can be achieved through distinct sensitivity commitments.
   (C)~Sensitivity variance per neuron for specialists vs generalists (log scale;
   individual neuron points shown, $n = 14$ per group). Specialists show high, varied
   sensitivity ($\bar{\sigma}^2 = \statDegAsixSpecSensVarMean$); generalists show
-  substantially lower sensitivity variance ($\bar{\sigma}^2 = \statDegAsixGenSensVarMean$;
-  ratio $= \statDegAsixVarRatio\times$; Mann-Whitney $p = \statDegAsixVarMwP$, one-sided).
+  substantially lower sensitivity variance ($\bar{\sigma}^2 = \statDegAsixGenSensVarMean$).
+  The specialist:generalist variance ratio is $\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$
+  (within-mouse-pooled to across-all-54 definitions; hierarchical-bootstrap 95\% CI
+  $[\statDegAsixVarBootCiLo,\,\statDegAsixVarBootCiHi]$). At the mouse level (the independent
+  unit), $\statDegAsixMouseNPos$/9 mice exceed the generalist (one-sample Wilcoxon
+  $p = \statDegAsixMouseWilcoxP$); the per-neuron Mann-Whitney is $p = \statDegAsixVarMwP$
+  (one-sided).
   (D)~Mean sensitivity variance over 150 generations: specialists (solid, blue) vs
   generalists (dashed, orange), log scale. The endpoint shown in Panel~C is the product
   of a progressive process: specialist sensitivity variance diverges from the generalist
@@ -1057,18 +1077,40 @@ topology, causal sensitivity, representational geometry, and dynamical geometry.
 %%%   4. Connect to Huang 2024 (Contravariance -- inverted by architecture)
 %%%   5. Functional sensitivity commitment as the positive claim
 
-Degeneracy is typically discussed as a property that must be inferred from
-behavioral equivalence under structural variation. Our constrained system makes it
-an architectural fact: the constraint geometry (Dale's Law, degree limits, quantized
-weights) compresses all solutions into the same structural region regardless of the
-behavioral target, so degeneracy is present by construction at the aggregate level.
-What our analyses reveal is how far this degeneracy extends: it spans every level of
-circuit description examined, from aggregate statistics and connection topology through
-causal sensitivity, representational geometry, and dynamical geometry.
+The central result of this study is a cautionary one for systems neuroscience:
+behavioral individuation can be real and reliable yet invisible to the entire
+standard toolkit for relating circuit structure to function. The nine individual
+targets are genuinely distinguishable---a classifier separates them from the real
+behavioral data alone at $\statIndividuationClassAccPct$\% accuracy against a
+$\statIndividuationChancePct$\% chance level (Supplementary Analysis~\ref{sec:supp_holdout}),
+and evolved specialisation persists on held-out trajectories---yet no aggregate
+statistic, connection-topology measure, representational-similarity or manifold
+analysis, or attractor/Lyapunov descriptor recovers which mouse a circuit was shaped
+to become. An analyst equipped with the methods most commonly used to characterise
+neural circuits would conclude these circuits are interchangeable. They are not.
 
-It extends further than the aggregate floor. Connection topology varies freely within
-and across mice, yet that variation carries no information about behavioral identity
-at any scale: within mice, between mice, or across the full agent population. The
+Our constrained system makes degeneracy an architectural fact rather than an inferred
+property: the constraint geometry (Dale's Law, degree limits, quantized weights)
+compresses all solutions into the same structural region regardless of the behavioral
+target. This degeneracy has two faces, which we distinguish deliberately. At the level
+of \emph{competence}, it is classical: the reachable structural space is saturated with
+equally-good navigators, so selection is free to reach any of them (a many-to-one map
+from structure to navigational fitness). At the level of \emph{identity}, it is stronger:
+no structural axis distinguishes which mouse a circuit was shaped to replicate, even
+though the individual behaviors differ. Individuation exists but leaves no structural
+trace. We note that not all of the null results carry equal weight: some are close to
+forced by the architecture. A small saturating \texttt{tanh} network under zero drive
+contracts to a single stable fixed point, so the absence of a mouse-specific autonomous
+attractor or Lyapunov signature (\S\ref{sec:dynamics_degen}) is largely guaranteed a
+priori; the non-trivial dynamical test is the driven-trajectory comparison, which is
+also flat. The structural, topological, and representational nulls are the substantive
+ones, and it is their conjunction with demonstrable behavioral individuation that
+constitutes the blind-spot result.
+
+The identity-level degeneracy extends further than the aggregate floor. Connection
+topology varies freely within and across mice, yet that variation carries no information
+about behavioral identity at any scale: within mice, between mice, or across the full
+agent population. The
 mutual information between any structural axis and behavioral identity is weak and
 non-significant (maximum NMI $= \statDegAthreeNmiMax$). And critically, this
 topology-behavior flatness is architectural rather than a product of selection: random
@@ -1103,14 +1145,16 @@ rather than the task, and shows that when the architecture saturates the
 structural axes, selection routes behavioral individuation through a functional
 channel (sensitivity commitment) that leaves no structural trace. Specialists
 develop high, varied sensitivity to circuit perturbations, but not convergent:
-within-mouse sensitivity profiles are significantly \emph{less} similar than between-mouse profiles
-($\statClaimTwentyEightWithinSim$ versus $\statClaimTwentyEightBetweenSim$;
-Mann-Whitney $p = \statClaimTwentyEightMwP$), so even replicates of a single mouse
+within-mouse sensitivity profiles are no more similar than between-mouse profiles
+($\statClaimTwentyEightWithinSim$ versus $\statClaimTwentyEightBetweenSim$; the small
+gap is not significant under a pseudoreplication-aware test,
+label-permutation $p = \statClaimTwentyEightPermP$), so even replicates of a single mouse
 do not converge on a shared sensitivity signature. Generalists show substantially lower,
 more uniformly distributed sensitivity ($\bar{\sigma}^2 = \statDegAsixGenSensVarMean$)
 with no strong commitment to any subset of pathways. The
-$\statDegAsixVarRatio\times$ difference in sensitivity variance between specialists
-and generalists is the signature of what individual-target selection achieves in a
+$\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$ difference in sensitivity variance between specialists
+and generalists (mouse-level $p = \statDegAsixMouseWilcoxP$) is the signature of what
+individual-target selection achieves in a
 degenerate space: functional commitment without structural differentiation, and
 without convergence on specific pathways.
 The representational and dynamical geometry analyses confirm that this absence of
@@ -1178,11 +1222,13 @@ functional differences between individuals. Two circuits can have identical aggr
 structural profiles (pathway counts, weight magnitudes, E/I composition) while being
 specialised to distinct behavioral targets. This has direct implications for
 connectomics efforts that aim to relate circuit structure to function: the mapping
-may be many-to-many rather than one-to-one (here demonstrated directly in the
-many-structures-to-one-function, i.e.\ degenerate, direction; the converse
-plurifunctional direction follows by extension), particularly in systems where
-architectural constraints compress the structural space \citep{bargmann2013connectome,
-jonas2017microprocessor}.
+from structure to function is many-to-one---many structurally distinct circuits realise
+the same competence (navigational fitness)---and, more strongly, structure additionally
+fails to encode \emph{which individual} a circuit implements. We demonstrate this
+many-to-one, identity-degenerate direction directly; we do not claim the converse
+plurifunctional (one-structure-to-many-functions) direction, which our design does not
+test. This matters most in systems where architectural constraints compress the
+structural space \citep{bargmann2013connectome, jonas2017microprocessor}.
 
 The per-source ablation null result (0 of 14 source neurons significant; within-mouse
 sensitivity profiles no more correlated than between-mouse profiles) extends this to
@@ -1257,6 +1303,18 @@ maze geometry without reward. Generalisation to outbred populations, different m
 conditions, or different task structures requires further investigation. These
 findings constitute a proof-of-concept demonstration in a controlled minimal system,
 not a general claim about neural coding mechanisms.
+
+Sixth, the analysis is null-heavy by design, and the interpretation rests on a small
+number of positive results, each tied to a specific pre-specified hypothesis rather
+than emerging from an unstructured screen: the topology-to-representation correspondence
+(Mantel $\rho = \statActEmbTopoMantelRho$, $p = \statActEmbTopoMantelP$) and the
+specificity dose-response (Spearman $\rho = \statPermutationOptionaSpearmanRho$,
+permutation $p = \statPermutationOptionaSpearmanPermP$, $n = 9$). We report these with
+effect sizes and confidence intervals rather than $p$-values alone, and do not apply a
+joint multiple-comparison correction across them because they test distinct,
+independently motivated hypotheses. The dose-response in particular is borderline and,
+as noted above, indicative rather than firmly established; neither the causal nor the
+representational conclusion depends on it.
 
 
 % ---------------------------------------------------------------------------
@@ -1455,13 +1513,6 @@ specialization. The raw own/cross ratio equals $1 -$ index.
 \paragraph{Strain clustering.}
 Mann-Whitney $U$ test comparing within-strain vs between-strain off-diagonal fitness values.
 
-\paragraph{Connection-level analysis.}
-Per-connection ANOVA tested only connections that were non-zero in at least one agent, to
-avoid inflating the multiple-comparison correction with structurally impossible entries
-(the $14 \times 14$ weight matrix contains many entries that are zero in all agents due to
-sparsity constraints and the prohibition on incoming connections to sensory neurons).
-FDR correction was applied across all tested connections.
-
 \paragraph{Weight similarity.}
 Pairwise cosine similarity of flattened weight matrices. Within-mouse vs between-mouse
 comparison via Mann-Whitney $U$.
@@ -1484,9 +1535,9 @@ for visualization.
 Maximal Lyapunov exponents were estimated for all 54 agents via finite perturbation
 ($\varepsilon = 10^{-6}$, 8 random unit-vector perturbation directions). Log divergence
 $\Lambda(t) = \log(\|\mathbf{h}(t) - \mathbf{h}_\varepsilon(t)\| / \varepsilon)$ was tracked
-for 400 steps; $\lambda_1$ was estimated as the linear slope over the first 200 steps
-(tanh saturation in this small network ensures the linear regime is reliably reached within
-this window). One-way ANOVA and Kruskal-Wallis tests compared $\lambda_1$
+for 400 steps; $\lambda_1$ was estimated as the mean log-divergence rate over the full
+400-step trajectory (Equation~\ref{eq:lyapunov}), averaged over the 8 perturbation directions.
+One-way ANOVA and Kruskal-Wallis tests compared $\lambda_1$
 across mice.
 
 \paragraph{Fixed point analysis.}
@@ -1643,11 +1694,18 @@ comparable across agents regardless of each agent's baseline computational outpu
 scale. Sensitivity variance per neuron was defined as the variance of these
 normalised sensitivity scores across the replicate set. For specialists, this
 variance was computed across the 6 replicates per mouse, then pooled across all 9
-mice; for generalists, across the 6 generalist replicates. The
-$\statDegAsixVarRatio\times$ ratio between specialist and generalist mean sensitivity
-variance reflects this normalised comparison; its significance was assessed by a
-one-sided Mann-Whitney $U$ test on the two sets of per-neuron variances
-($n = 14$ neurons per group, specialist $>$ generalist; $p = \statDegAsixVarMwP$).
+mice; for generalists, across the 6 generalist replicates. The within-mouse-pooled
+specialist:generalist ratio is $\statDegAsixVarRatioWithin\times$; because between-mouse
+variance is negligible, computing the specialist variance across all 54 agents instead
+gives $\statDegAsixVarRatio\times$, so we report the range
+$\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$. Because per-neuron variances
+within a circuit are not independent, the primary test uses the mouse as the unit
+(one-sample Wilcoxon on the 9 per-mouse commitment scalars against the generalist:
+$\statDegAsixMouseNPos$/9 mice exceed it, $p = \statDegAsixMouseWilcoxP$); a
+hierarchical bootstrap (resampling mice, replicates, and generalists; seed~1) gives a
+95\% CI of $[\statDegAsixVarBootCiLo,\,\statDegAsixVarBootCiHi]$. The per-neuron
+Mann-Whitney ($n = 14$ per group, one-sided specialist $>$ generalist;
+$p = \statDegAsixVarMwP$) is reported for comparability but is pseudoreplicated.
 Topology cosine similarity was compared
 between groups using a two-sided Mann-Whitney $U$ test. Generalist fitness cost per
 mouse was computed as the percentage difference between mean generalist fitness and
@@ -1687,11 +1745,12 @@ and $N_\mathrm{dir} = 8$ random perturbation directions of magnitude $\varepsilo
 were applied to the initial network state.
 Each perturbed trajectory was evolved for 400 steps under the same sensory input,
 and the log-ratio of perturbation norms at each step was recorded.
-The Lyapunov exponent was obtained as the slope of the mean log-norm growth across
-all 8 directions and the 400 steps:
+The Lyapunov exponent was obtained as the mean log-divergence rate over the full
+400-step trajectory, averaged over the 8 perturbation directions:
 \begin{equation}
+\label{eq:lyapunov}
   \lambda_1 = \frac{1}{400}\,\frac{1}{8}
-  \sum_{k=1}^{8} \log \frac{\|\delta \mathbf{h}_t^{(k)}\|}{\|\delta \mathbf{h}_0^{(k)}\|}.
+  \sum_{k=1}^{8} \log \frac{\|\delta \mathbf{h}_{400}^{(k)}\|}{\|\delta \mathbf{h}_0^{(k)}\|}.
 \end{equation}
 Between-mouse differences in $\lambda_1$ were assessed with one-way ANOVA (9 groups)
 and confirmed with Kruskal-Wallis.
@@ -1901,9 +1960,9 @@ appear in Figure~\ref{fig:system}F--G in the main text.
 Figure~\ref{fig:supp_ei_dynamics} shows the temporal evolution of E/I balance
 across generations for interneurons and motor neurons. Interneurons show no
 consistent convergence pattern (panel A). The speed motor neuron converges
-uniformly to a strongly excitatory-dominated regime ($\approx\statEiBalanceSpeedMean$)
+uniformly to a strongly excitatory-dominated regime (mean $\approx\statEiBalanceSpeedMean$)
 across all 9 mice (panel B). The turn motor neuron converges to a more balanced
-regime ($\approx\statEiBalanceTurnMedian$) with greater inter-mouse variability
+regime (mean $\approx\statEiBalanceTurnMean$) with greater inter-mouse variability
 (panel C). The per-neuron E/I heatmap at generation 150 appears in
 Figure~\ref{fig:system}H.
 
@@ -1917,9 +1976,9 @@ Figure~\ref{fig:system}H.
   = per-mouse mean $\pm$SD; black = grand mean). No consistent convergence pattern
   emerges.
   (B)~E/I balance for the speed motor neuron, converging uniformly to
-  $\approx\statEiBalanceSpeedMean$ excitatory across all 9 mice.
+  mean $\approx\statEiBalanceSpeedMean$ excitatory across all 9 mice.
   (C)~E/I balance for the turn motor neuron, converging to
-  $\approx\statEiBalanceTurnMedian$ with greater variability, consistent with
+  mean $\approx\statEiBalanceTurnMean$ with greater variability, consistent with
   closed-loop inhibitory modulation of turning direction.}
   \label{fig:supp_ei_dynamics}
 \end{figure}
@@ -2096,12 +2155,28 @@ held-out test set.
 
 The held-out specialisation index was $\statHoldoutHoldoutIndex$ across all 9
 mice (all held-out indices $> 0$; Figure~\ref{fig:supp_holdout}), compared to
-$\statHoldoutTrainingIndex$ on the training set. The attenuation likely reflects
-reduced statistical precision of the held-out behavioral baseline: each mouse's
-held-out target is estimated from ${\approx}\statHoldoutMeanBoutsHoldout$
-trajectory bouts rather than ${\approx}\statHoldoutMeanBoutsTotal$, reducing the
-resolution of the behavioral fingerprint. No agent lost specialisation entirely;
-the unanimous persistence of positive indices rules out genuine overfitting.
+$\statHoldoutTrainingIndex$ on the training set. The attenuation reflects
+reduced statistical precision of the held-out behavioral baseline rather than
+overfitting: each mouse's held-out target is estimated from
+${\approx}\statHoldoutMeanBoutsHoldout$ trajectory bouts rather than
+${\approx}\statHoldoutMeanBoutsTotal$, reducing the resolution of the behavioral
+fingerprint. No agent lost specialisation entirely; the unanimous persistence of
+positive indices is inconsistent with genuine overfitting.
+
+We confirmed directly, from the real mouse data alone, that the individual
+behavioral targets are stably distinguishable beyond within-mouse bout-to-bout
+noise (this is the foundation on which the agent-level specialisation rests). We
+partitioned each mouse's bouts into $\statIndividuationNFolds$ folds, computed the
+four fitness metrics per fold with the same machinery used for fitness, and compared
+within- vs between-mouse fold distances. Within-mouse fold distances were smaller than
+between-mouse distances in the combined fitness metric (within $=\statIndividuationWithinDist$,
+between $=\statIndividuationBetweenDist$; Mann-Whitney $p \statIndividuationMwP$,
+rank-biserial $=\statIndividuationRankBiserial$), and a leave-one-fold-out
+nearest-mouse classifier reached $\statIndividuationClassAccPct$\% accuracy against a
+$\statIndividuationChancePct$\% chance level (permutation $p \statIndividuationClassP$).
+The mice are therefore genuinely individuated in the behavioral metrics, so the
+held-out attenuation is target-estimation noise, not a circularity of the fitness
+definition.
 
 \begin{figure}[H]
   \centering
