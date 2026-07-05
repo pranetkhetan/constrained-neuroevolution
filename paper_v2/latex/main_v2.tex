@@ -84,9 +84,9 @@ $\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$ higher sensitivity va
 trained on all mice simultaneously ($\statDegAsixMouseNPos$/9 mice, mouse-level
 $p = \statDegAsixMouseWilcoxP$), despite exploring statistically
 indistinguishable topological diversity. The particular pathways a circuit commits
-to are not individually consistent, so behavioral individuation is expressed as a
-magnitude of functional commitment rather than a mouse-specific structural or
-pathway signature---degeneracy that operates not just at the structural level but
+to carry no shared mouse-specific signature, so behavioral individuation is expressed as a
+magnitude of functional commitment rather than a structural or
+pathway fingerprint---degeneracy that operates not just at the structural level but
 at the level of the computational strategies that implement individual behavior.
 \end{abstract}
 
@@ -187,7 +187,7 @@ individual-target selection shapes instead is the strength of functional sensiti
 commitment: specialists develop roughly $\statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$
 higher sensitivity variance than generalists trained on all mice simultaneously, despite
 exploring statistically indistinguishable topological diversity. The particular pathways
-a circuit commits to are not individually consistent across replicates, so individuation
+a circuit commits to carry no shared mouse-specific signature, so individuation
 is carried by the magnitude of commitment rather than a specific pathway signature.
 Selection navigates a degenerate space to produce individual-specific function without
 leaving a legible structural trace.
@@ -770,22 +770,24 @@ to any particular subset of pathways.
 The A4 sensitivity RSA result (Supplementary Figure~\ref{fig:supp_sensitivity_rsa})
 and the A6 sensitivity variance result are compatible and jointly clarify the
 mechanism. The \emph{geometry} of the sensitivity profile does not fingerprint mouse
-identity (A4: which neurons an agent is sensitive to is not individually consistent).
+identity (A4: which neurons an agent is sensitive to carries no consistent mouse-specific signature).
 What individuates a specialist is the \emph{strength} of its sensitivity commitment:
 how strongly, and how variably across replicates, its circuits commit to specific
-pathway perturbations, even as the particular pathways committed to differ freely.
+pathway perturbations, with no shared mouse-specific pattern in which pathways are committed to.
 Individual-target training builds this commitment; generalist training cannot
 (Figure~\ref{fig:sensitivity_commitment}D). This commitment co-develops with
 behavioural specialisation throughout training: sensitivity variance in specialist
 circuits remains elevated above the generalist level from approximately generation~20
-onward, while within-mouse sensitivity profiles diverge from a shared baseline as
-circuits become mouse-committed (Supplementary Figure~\ref{fig:supp_sens_commitment_evo}).
+onward (Supplementary Figure~\ref{fig:supp_sens_commitment_evo}); the small within-
+versus between-mouse gap in sensitivity-profile similarity does not survive a
+pseudoreplication-aware test (§\ref{sec:sensitivity}), so it is not evidence that
+replicates commit to distinct pathways.
 
 What individual-target selection shapes is therefore not a distinctive topology, but
 the \emph{strength} of a circuit's functional sensitivity commitment: specialists develop
 higher sensitivity variance across replicates than generalists, while the RSA null
 (Supplementary Figure~\ref{fig:supp_sensitivity_rsa}) shows that the specific committed
-pathways are not individually consistent. Behavioral individuation in this constrained
+pathways carry no consistent mouse-specific signature. Behavioral individuation in this constrained
 system is thus expressed as a magnitude of functional commitment, not as a distinctive
 circuit structure or a mouse-specific pathway signature.
 
@@ -2435,11 +2437,12 @@ remains elevated relative to the generalist level from approximately generation~
 onward, indicating that the higher sensitivity commitment seen at generation~150
 builds progressively rather than emerging late.
 Panel~C shows pairwise cosine similarity of sensitivity profile vectors: within
-the same mouse (solid) vs between mice (dashed). Within-mouse cosine similarity
-falls below the between-mouse baseline over training, indicating that replicates
-targeting the same mouse develop idiosyncratic mouse-specific sensitivity
-profiles rather than converging on a single canonical solution~---~a further
-expression of functional degeneracy within the commitment regime.
+the same mouse (solid) vs between mice (dashed). Within-mouse cosine similarity is
+marginally below the between-mouse baseline over training, but this small gap is not
+significant under a pseudoreplication-aware test (label-permutation
+$p = \statClaimTwentyEightPermP$; §\ref{sec:sensitivity}); we therefore read it only as
+the absence of a shared mouse-specific pathway signature, not as evidence that
+replicates commit to distinct pathways.
 
 \begin{figure}[H]
   \centering
@@ -2449,9 +2452,11 @@ expression of functional degeneracy within the commitment regime.
   (B)~Mean per-neuron sensitivity variance over generations: specialists (blue) vs
   generalists (orange), log scale. Dashed vertical line marks generation~20.
   (C)~Within-mouse pairwise cosine similarity of sensitivity profiles (solid line,
-  $\pm$ SD shading) vs between-mouse baseline (dashed). Within-mouse similarity
-  falls below the between-mouse baseline from approximately generation~50, indicating
-  divergence of idiosyncratic mouse-specific sensitivity patterns across replicates.}
+  $\pm$ SD shading) vs between-mouse baseline (dashed). Within-mouse similarity is
+  marginally below the between-mouse baseline; this small gap is not significant under a
+  pseudoreplication-aware test (label-permutation $p = \statClaimTwentyEightPermP$;
+  §\ref{sec:sensitivity}), indicating no shared mouse-specific pathway signature
+  rather than convergence to distinct per-replicate solutions.}
   \label{fig:supp_sens_commitment_evo}
 \end{figure}
 
