@@ -218,15 +218,17 @@ Human-readable companion to stats/paper_stats.tex.
   mw_p                         = 0.6919
 
 ## generalist
-  grand_mean                   = 2.238
-  min_per_mouse                = 1.943   # smallest per-mouse mean Δfit (mouse: D3)
-  max_per_mouse                = 2.451   # largest per-mouse mean Δfit (mouse: D5)
-  n_replicates                 = 6
+  grand_mean                   = 2.090
+  min_per_mouse                = 1.768   # smallest per-mouse mean Δfit (mouse: D3)
+  max_per_mouse                = 2.330   # largest per-mouse mean Δfit (mouse: D5)
+  n_replicates                 = 15
   n_perm                       = 10
-  kruskal_h                    = 13.599
-  kruskal_p                    = 0.0928
-  anova_f                      = 1.931
-  anova_p                      = 0.0784
+  kruskal_h                    = 62.318
+  kruskal_p                    = \ensuremath{1.6 \times 10^{-10}}
+  friedman_chi                 = 78.6   # Friedman chi-sq: per-mouse Delta-fit rank order consistent across replicates
+  friedman_p                   = \ensuremath{9.3 \times 10^{-14}}   # Friedman p (shared intrinsic mouse-difficulty ordering, not own-mouse calibration)
+  anova_f                      = 13.377
+  anova_p                      = \ensuremath{7.1 \times 10^{-14}}
   fitness_min                  = 0.816
   fitness_max                  = 0.988
   fitness_mean                 = 0.921
@@ -365,7 +367,7 @@ Human-readable companion to stats/paper_stats.tex.
   n_mice                       = 9
   n_reps                       = 6   # evolution replicates per mouse
   n_runs                       = 54   # total per-mouse evolution runs
-  n_generalist_reps            = 6
+  n_generalist_reps            = 15
 
 ## Block 2 — degeneracy analyses (A1-A6)
 statDegAoneRhoAll = 0.001  # Spearman rho (topo vs beh dist), all pairs
@@ -411,23 +413,23 @@ statDegAfourMantelPPerm = 0.357  # Mantel p permutation
 statDegAfiveRhoRand = -0.029  # Spearman rho: topo vs beh dist, random agents
 statDegAfivePRand = 0.270  # p for rho_rand
 statDegAfiveMwWithinP = 0.998  # MW p: within vs between beh dist, random agents
-statDegAsixMwTopoP = 0.856  # MW p: gen vs spec topology similarity
-statDegAsixGenTopoMean = 0.276  # mean topology cosine similarity, generalists
+statDegAsixMwTopoP = 0.173  # MW p: gen vs spec topology similarity
+statDegAsixGenTopoMean = 0.261  # mean topology cosine similarity, generalists
 statDegAsixSpecTopoMean = 0.268  # mean topology cosine similarity, specialists
-statDegAsixMeanCostPct = 43.1  # mean-of-ratios generalist fitness cost pct (per-mouse mean)
-statDegAsixCostRatioOfMeans = 42.1  # ratio-of-means generalist fitness cost pct (stable summary; primary)
-statDegAsixMinCostPct = 28.8  # min per-mouse generalist fitness cost pct
-statDegAsixMaxCostPct = 81.3  # max per-mouse generalist fitness cost pct
+statDegAsixMeanCostPct = 44.3  # mean-of-ratios generalist fitness cost pct (per-mouse mean)
+statDegAsixCostRatioOfMeans = 43.6  # ratio-of-means generalist fitness cost pct (stable summary; primary)
+statDegAsixMinCostPct = 32.4  # min per-mouse generalist fitness cost pct
+statDegAsixMaxCostPct = 72.9  # max per-mouse generalist fitness cost pct
 statDegAsixHardestMouse = D8  # mouse with highest generalist fitness cost
-statDegAsixEasiestMouse = D5  # mouse with lowest generalist fitness cost
+statDegAsixEasiestMouse = B6  # mouse with lowest generalist fitness cost
 statDegAsixSpecSensVarMean = 0.230  # mean sensitivity variance per neuron, specialists
-statDegAsixGenSensVarMean = 0.089  # mean sensitivity variance per neuron, generalists (normalized)
-statDegAsixVarRatio = 2.6  # sensitivity variance ratio: specialist / generalist (normalized)
-statDegAsixVarMwP = 0.003  # MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each
-statDegAsixVarRatioWithin = 2.2  # sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)
-statDegAsixVarBootMedian = 2.1  # hierarchical-bootstrap median sensitivity variance ratio (seed=1)
-statDegAsixVarBootCiLo = 1.02  # hierarchical-bootstrap 2.5pct sensitivity variance ratio
-statDegAsixVarBootCiHi = 7.36  # hierarchical-bootstrap 97.5pct sensitivity variance ratio
+statDegAsixGenSensVarMean = 0.035  # mean sensitivity variance per neuron, generalists (normalized)
+statDegAsixVarRatio = 6.7  # sensitivity variance ratio: specialist / generalist (normalized)
+statDegAsixVarMwP = 0.001  # MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each
+statDegAsixVarRatioWithin = 6.4  # sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)
+statDegAsixVarBootMedian = 5.7  # hierarchical-bootstrap median sensitivity variance ratio (seed=1)
+statDegAsixVarBootCiLo = 2.88  # hierarchical-bootstrap 2.5pct sensitivity variance ratio
+statDegAsixVarBootCiHi = 11.92  # hierarchical-bootstrap 97.5pct sensitivity variance ratio
 statDegAsixMouseNPos = 9  # n mice (of 9) with sensitivity variance > generalist (mouse-level unit)
 statDegAsixMouseWilcoxP = 0.002  # one-sample Wilcoxon p, mouse-level sensitivity commitment (primary statistic)
 

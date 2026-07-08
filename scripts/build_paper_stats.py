@@ -537,6 +537,20 @@ def _build_core(bag: StatBag) -> None:
     bag.add("generalist", "n_perm",       g["N_PERM_C"],  str(g["N_PERM_C"]))
     bag.add("generalist", "kruskal_h",    g["kruskal"]["H"], _fmt(g["kruskal"]["H"], 3))
     bag.add("generalist", "kruskal_p",    g["kruskal"]["p"], _fmt_p_exact(g["kruskal"]["p"]))
+
+    # Reframe (n=15): the significant per-mouse Kruskal-Wallis reflects a SHARED intrinsic
+    # mouse-difficulty ordering (identical across replicates), not per-individual calibration.
+    # Friedman across the 15 replicates tests whether the per-mouse Delta-fit rank order is
+    # consistent rep-to-rep (it is, strongly) -> a nuisance between-mouse effect, not own-mouse
+    # bias. A generalist has no own mouse, so it cannot show the specialist own>other asymmetry;
+    # its grand-mean Delta-fit sits at the specialist OTHER-mouse level (2.09), not the OWN (2.53).
+    _gen_profiles = np.array([[float(results_C[r][m]["delta_fit"]) for m in MICE]
+                              for r in range(len(results_C))])  # (n_rep, 9)
+    _fried = _scipy_stats.friedmanchisquare(*[_gen_profiles[:, j] for j in range(len(MICE))])
+    bag.add("generalist", "friedman_chi", float(_fried.statistic), _fmt(_fried.statistic, 1),
+            "Friedman chi-sq: per-mouse Delta-fit rank order consistent across replicates")
+    bag.add("generalist", "friedman_p", float(_fried.pvalue), _fmt_p_exact(_fried.pvalue),
+            "Friedman p (shared intrinsic mouse-difficulty ordering, not own-mouse calibration)")
     bag.add("generalist", "anova_f",      g["anova"]["F"],   _fmt(g["anova"]["F"], 3))
     bag.add("generalist", "anova_p",      g["anova"]["p"],   _fmt_p_exact(g["anova"]["p"]))
 
@@ -984,7 +998,11 @@ def _build_degeneracy() -> tuple[list[str], list[str]]:
     A6_mouse_wilcox_p = float(
         _scipy_stats.wilcoxon(A6_mouse_scalars - A6_gen_scalar, alternative="greater").pvalue)
 
-    # (c) Hierarchical bootstrap CI on the ratio (n=6 generalists; magnitude uncertainty).
+    # (c) Hierarchical bootstrap CI on the ratio (magnitude uncertainty).
+    # The generalist resample count is read from the array (n=6 at first
+    # submission; n=15 after the referee-follow-up replicate extension r6-r14),
+    # so extending A6_results.pkl to 15 reps tightens this CI automatically.
+    _n_gen = gen_norm6.shape[0]
     _rng6 = np.random.default_rng(1)
     _by_mouse6 = {m: sens_norm6[labels6 == m] for m in MICE}
     _boot = np.empty(10000)
@@ -994,7 +1012,7 @@ def _build_degeneracy() -> tuple[list[str], list[str]]:
         for _m in _drawn:
             _sub = _by_mouse6[_m]
             _svs.append(_sub[_rng6.integers(0, _sub.shape[0], _sub.shape[0])].var(0, ddof=1))
-        _gmean = gen_norm6[_rng6.integers(0, 6, 6)].var(0, ddof=1).mean()
+        _gmean = gen_norm6[_rng6.integers(0, _n_gen, _n_gen)].var(0, ddof=1).mean()
         _boot[_b] = np.mean(np.stack(_svs), 0).mean() / _gmean if _gmean > 1e-12 else np.nan
     _boot = _boot[np.isfinite(_boot)]
     A6_var_boot_median = float(np.median(_boot))

@@ -674,9 +674,16 @@ addresses.
   $n = 9$). The generalist (teal diamond) anchors ratio $= 1.00\times$.
   (D)~Generalist control: permutation $\Delta$fit for generalist agents,
   specialist-own, and specialist-other conditions (mean $\pm$ SD, individual
-  points overlaid). Generalists show no own-mouse elevation
-  (Kruskal-Wallis $p = \statGeneralistKruskalP$, n.s.); specialists show
-  unanimous own $>$ other (Wilcoxon $p = \statPhaseThreebWilcoxonP$).
+  points overlaid). Generalists carry no own-mouse peak: their mean $\Delta$fit
+  ($\statGeneralistGrandMean$, 15 replicates) sits at the specialist
+  \emph{other}-mouse level ($\statPermutationOptionaSpecOtherMean$), well below the
+  specialist \emph{own}-mouse level ($\statPermutationOptionaSpecOwnMean$), whereas
+  specialists show unanimous own $>$ other (Wilcoxon $p = \statPhaseThreebWilcoxonP$).
+  Generalist $\Delta$fit does vary across the nine test mice
+  (Kruskal-Wallis $p = \statGeneralistKruskalP$), but this reflects intrinsic
+  between-mouse disruptability shared identically across replicates (Friedman
+  $p = \statGeneralistFriedmanP$ for a consistent per-mouse rank order), not a
+  per-individual calibration signature.
   Per-source ablation (54~agents $\times$ 14 source neurons) is shown in
   Supplementary Figure~\ref{fig:supp_ablation_heatmap}.}
   \label{fig:causal}
@@ -702,10 +709,10 @@ addresses.
 %%% Target: ~600 words
 
 Having established that degeneracy operates on every structural axis, we ask
-what individual-target selection actually achieves. We trained six generalist agents
-simultaneously on all 9 mice, using fitness equal to the mean across all 9 behavioral
-targets, with the same architecture, constraints, and evolutionary parameters as the
-per-mouse runs.
+what individual-target selection actually achieves. We trained fifteen generalist agents
+(independent replicates) simultaneously on all 9 mice, using fitness equal to the mean
+across all 9 behavioral targets, with the same architecture, constraints, and evolutionary
+parameters as the per-mouse runs.
 
 \textbf{Generalists and specialists share statistically indistinguishable topological diversity.}
 Generalist agents converged structurally, as expected from the architectural floor
@@ -737,9 +744,16 @@ not claim that replicates commit to \emph{distinct} pathways; the defensible rea
 that no shared, mouse-specific pathway signature emerges. Selection builds the strength
 of functional commitment, not convergence to specific pathways. Generalist agents show substantially lower sensitivity variance
 ($\bar{\sigma}^2 = \statDegAsixGenSensVarMean$; ratio
-$= \statDegAsixVarRatio\times$; per-neuron Mann-Whitney $p = \statDegAsixVarMwP$,
+$= \statDegAsixVarRatioWithin$--$\statDegAsixVarRatio\times$, within-mouse-pooled to
+across-all-54 definitions; per-neuron Mann-Whitney $p = \statDegAsixVarMwP$,
 one-sided, $n = 14$ neurons per group; Figure~\ref{fig:sensitivity_commitment}C),
 reflecting weaker, more distributed sensitivity to perturbations across all pathways.
+Because the ratio's magnitude depends on the generalist replicate sample, we estimated
+it over fifteen independent generalist replicates and quantified its uncertainty with a
+hierarchical bootstrap (95\% CI $[\statDegAsixVarBootCiLo,\,\statDegAsixVarBootCiHi]$);
+treating the mouse as the independent unit, all $\statDegAsixMouseNPos$ of 9 mice exceed
+the generalist (one-sample Wilcoxon $p = \statDegAsixMouseWilcoxP$), so the direction is
+unambiguous even though the point magnitude carries wide intervals.
 Generalists achieve comparable structural diversity at the cost of functional
 specialization of any kind.
 
@@ -750,12 +764,19 @@ $\statDegAsixMinCostPct$--$\statDegAsixMaxCostPct$\%;
 Figure~\ref{fig:sensitivity_commitment}B). The hardest mouse to generalise across
 was \statDegAsixHardestMouse{} ($\statDegAsixMaxCostPct$\% cost) and the easiest
 was \statDegAsixEasiestMouse{} ($\statDegAsixMinCostPct$\% cost). The generalist's
-permutation profile confirms the mechanism: it shows no own-mouse elevation in
-permutation $\Delta$fit (Kruskal-Wallis $p = \statGeneralistKruskalP$), in contrast
-to specialists where own-mouse degradation is unanimous
-(Figure~\ref{fig:causal}D). A generalist circuit is
-disrupted like a specialist evaluated on its wrong mouse: partially calibrated to
-everyone, fully calibrated to none.
+permutation profile confirms the mechanism: its mean $\Delta$fit
+($\statGeneralistGrandMean$, 15 replicates) sits at the specialist \emph{other}-mouse
+level ($\statPermutationOptionaSpecOtherMean$)---not the specialist \emph{own}-mouse
+level ($\statPermutationOptionaSpecOwnMean$)---so the generalist carries no own-mouse
+peak, in contrast to specialists whose own-mouse degradation is unanimous
+(own $>$ other in 8/9 mice, Wilcoxon $p = \statPhaseThreebWilcoxonP$;
+Figure~\ref{fig:causal}D). Generalist $\Delta$fit does differ across the nine test
+mice (Kruskal-Wallis $p = \statGeneralistKruskalP$), but this is an intrinsic
+between-mouse disruptability effect---the same mice are hardest to perturb in every
+replicate (Friedman $p = \statGeneralistFriedmanP$)---rather than a per-individual
+calibration signature. A generalist circuit is thus disrupted like a specialist
+evaluated on its wrong mouse: partially calibrated to everyone, fully calibrated to
+none.
 
 The fitness cost confirms that generalists do not simply fail to converge: relative
 to the per-mouse specialist fitness (mean of replicates), generalist error is higher
@@ -1696,7 +1717,7 @@ comparable across agents regardless of each agent's baseline computational outpu
 scale. Sensitivity variance per neuron was defined as the variance of these
 normalised sensitivity scores across the replicate set. For specialists, this
 variance was computed across the 6 replicates per mouse, then pooled across all 9
-mice; for generalists, across the 6 generalist replicates. The within-mouse-pooled
+mice; for generalists, across the 15 generalist replicates. The within-mouse-pooled
 specialist:generalist ratio is $\statDegAsixVarRatioWithin\times$; because between-mouse
 variance is negligible, computing the specialist variance across all 54 agents instead
 gives $\statDegAsixVarRatio\times$, so we report the range
@@ -1782,8 +1803,17 @@ Mann-Whitney $U$ test.
 
 All code, the distilled best-evolved agents, and analysis scripts are available at
 \url{https://github.com/pranetkhetan/constrained-neuroevolution}. The full evolved-agent
-archive and intermediate analysis outputs are deposited on Zenodo (DOI:
-\texttt{[ZENODO-DOI]}). Raw mouse behavioral data are from \citet{rosenberg2021mice}.
+archive and intermediate analysis outputs---including the aggregate individuation result
+(\texttt{analysis/individuation\_results.pkl}) that underlies the classifier accuracy
+reported in the Discussion and Supplementary Analysis~\ref{sec:supp_holdout}---are deposited
+on Zenodo (DOI: \texttt{[ZENODO-DOI]}) and travel with the repository.
+Raw mouse behavioral data are the tracked trajectory (\texttt{-tf}) files from
+\citet{rosenberg2021mice} (eLife 2021; \texttt{doi:10.7554/eLife.66175}), which we do not
+redistribute. To regenerate the individuation result from source, obtain those files, place
+them as \texttt{data/raw/\{mouse\}-tf} for the nine mice, and run
+\texttt{python scripts/analyze\_individuation.py -{}-tf\_dir data/raw -{}-n\_folds 6
+-{}-fold\_mode stride} (deterministic, seed~$=1$); all other results regenerate from the
+shipped intermediates via \texttt{python scripts/build\_paper\_stats.py}.
 
 
 % ----------------------------------------------------------------------------

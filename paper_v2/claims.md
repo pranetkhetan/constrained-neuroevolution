@@ -1,4 +1,4 @@
-# Claims Registry — *Selection Navigates a Degenerate Circuit Space*
+﻿# Claims Registry — *Selection Navigates a Degenerate Circuit Space*
 
 **Status:** Post-referee-revision snapshot of the manuscript (`paper_v2/latex/main_v2.tex`). Every value below is the current value in `stats/paper_stats.tex` (415 macros, pipeline-verified). This document is a faithful registry of the paper's claims and their evidence — not a development log. (Revision history: `claims_history.md`.)
 
@@ -11,8 +11,8 @@ The paper's contribution, in the language of degeneracy:
 - **Degeneracy is imposed by construction, not inferred.** Three architectural constraints (Dale's Law, sparse degree, quantized weights) compress every solution into one structural region, making structurally distinct circuits performing the same function the *expected* outcome of evolutionary search rather than a property to be discovered.
 - **Degeneracy is shown to be total — it spans every level of circuit description examined:** aggregate statistics → connection topology → causal sensitivity → representational geometry → dynamical geometry. Each level has its own architectural null control.
 - **Selection navigates the degenerate space without leaving a structural trace.** Behavioral individuation is robust (specialists are reliably distinct), yet no structural, representational, or dynamical axis carries individual identity.
-- **The one axis selection does shape is functional sensitivity commitment** — specifically its *strength*: specialists develop ~2.2–2.6× higher sensitivity variance than generalists (mouse-level *p* = 0.002), while exploring statistically indistinguishable topology.
-- **Individuation is a matter of commitment magnitude, not of which pathways a circuit commits to.** Within-mouse sensitivity profiles are no more similar to each other than to between-mouse profiles; the apparent gap does not survive a pseudoreplication-aware test (label-permutation *p* = 0.076), so no shared mouse-specific pathway signature can be claimed.
+- **The one axis selection does shape is functional sensitivity commitment** — specifically its *strength*: specialists develop ~6.4–6.7× higher sensitivity variance than generalists (15 generalist replicates; mouse-level *p* = 0.002; bootstrap 95% CI [2.88, 11.92]), while exploring statistically indistinguishable topology.
+- **No shared mouse-specific pathway signature.** Individuation is a matter of commitment *magnitude*, not *which* pathways a circuit commits to: the within- vs between-mouse profile-similarity gap does not survive a pseudoreplication-aware test (label-permutation *p* = 0.076), so there is no evidence that replicates commit to distinct per-individual pathways.
 
 The system is a 14-neuron recurrent network (6 sensory, 6 interneuron, 2 motor) navigating a hierarchical binary maze, evolved to replicate the navigation behavior of 9 individual mice (Rosenberg et al. 2021), 6 replicate runs per mouse, 54 runs total. Fitness tracks four behavioral statistics (Markov transition probabilities, spatial occupancy, path tortuosity, turn bias); no external reward.
 
@@ -29,7 +29,7 @@ Each Results section answers one question; the chain is the paper's spine.
 | 2.3 | Does topology variation explain the individuation? | No. Topology distance predicts behavioral distance at no scale; the flatness is architectural (random constrained agents are identical). |
 | 2.4 | Does any structural axis carry the identity information? | No. Mutual information between every structural axis and mouse identity is weak and non-significant. |
 | 2.5 | What does topology *do* — and what doesn't it do? | It is causally necessary for each circuit but degenerate across circuits; no structural decomposition fingerprints identity. |
-| 2.6 | What does individual-target selection actually achieve? | Functional sensitivity commitment (~2.2–2.6× higher variance than generalists; mouse-level *p* = 0.002) — directed but not convergent; no shared mouse-specific pathway signature. |
+| 2.6 | What does individual-target selection actually achieve? | Functional sensitivity commitment (~6.4–6.7× higher variance than 15 generalist replicates; mouse-level *p* = 0.002) — directed but not convergent; no shared mouse-specific pathway signature. |
 | 2.7 | Does degeneracy extend to representational geometry? | Yes. Activity-embedding geometry is mouse-invariant; weakly (positively) constrained by topology, but carries no identity. |
 | 2.8 | Does degeneracy extend to dynamical geometry? | Yes, completely. Stability, attractor landscape, and driven trajectories are all mouse-invariant despite circuits sharing as few as 7% of edges. |
 
@@ -106,9 +106,9 @@ All claims below are supported in the sealed manuscript by the listed evidence (
 | # | Claim | Key evidence |
 |---|---|---|
 | 22 | Generalists and specialists share statistically indistinguishable topological diversity (MW *p* = 0.856; gen 0.276 vs spec 0.268) — selection does not act on topology. | Topology cosine similarity, two-sided MW. Fig 5A. |
-| 23 | Individual-target training has a real fitness cost: generalist error is ~42.1% higher than specialists on a ratio-of-means basis (per-mouse range 28.8–81.3%), yet generalists still learn each mouse's behaviour well above chance. | Per-mouse generalist vs specialist fitness (ratio-of-means). Fig 5B. |
-| 24 | Individual-target selection builds ~2.2–2.6× higher normalized sensitivity variance in specialists vs generalists (within-mouse-pooled to across-54 definitions; bootstrap 95% CI [1.02, 7.36]). Primary test is mouse-level: 9/9 mice exceed the generalist (one-sample Wilcoxon *p* = 0.002); per-neuron MW *p* = 0.003 (one-sided) is reported but pseudoreplicated. | Source-permutation sensitivity, baseline-normalized. Fig 5C. |
-| 25 | The generalist is disrupted like a specialist on the wrong mouse: no own-mouse elevation (Kruskal-Wallis *p* = 0.093). | Generalist permutation profile. Fig 4D. |
+| 23 | Individual-target training has a real fitness cost: generalist error is ~43.6% higher than specialists on a ratio-of-means basis (15 generalist replicates; per-mouse range 32.4–72.9%), yet generalists still learn each mouse's behaviour well above chance. | Per-mouse generalist vs specialist fitness (ratio-of-means). Fig 5B. |
+| 24 | Individual-target selection builds ~6.4–6.7× higher normalized sensitivity variance in specialists vs generalists (15 generalist replicates; within-mouse-pooled to across-54 definitions; bootstrap 95% CI [2.88, 11.92]). Primary test is mouse-level: 9/9 mice exceed the generalist (one-sample Wilcoxon *p* = 0.002); per-neuron MW *p* = 0.001 (one-sided) is reported but pseudoreplicated. | Source-permutation sensitivity, baseline-normalized. Fig 5C. |
+| 25 | The generalist is disrupted like a specialist on the wrong mouse: its mean permutation Δfit (2.09, 15 replicates) sits at the specialist *other*-mouse level (2.09), not the *own*-mouse level (2.53), so it carries no own-mouse peak. Generalist Δfit does differ across the 9 mice (Kruskal-Wallis *p* < 10⁻⁹), but this is intrinsic between-mouse disruptability shared identically across replicates (Friedman *p* < 10⁻¹³), not per-individual calibration. | Generalist permutation profile (n=15). Fig 4D. |
 | 26 | **No shared mouse-specific pathway signature:** within-mouse sensitivity profiles are no more similar than between-mouse profiles (cosine 0.20 vs 0.24). The small gap does *not* survive a pseudoreplication-aware test (label-permutation *p* = 0.076; naive MW *p* = 0.040 is anticonservative). Demoted from "commitment is itself degenerate / distinct pathways" — exploratory, non-significant. | Pairwise cosine of 14-dim sensitivity vectors; label-permutation. §2.6. |
 
 ### Level 7 — Representational geometry (§2.7, `sec:rep_geometry`)
@@ -142,7 +142,7 @@ All claims below are supported in the sealed manuscript by the listed evidence (
 | 4 | Causal sensitivity | causally necessary but no identity fingerprint (local or distributed) | — |
 | 5 | Representational geometry | mouse-invariant; weak +topology coupling only | Yes (generalists identical) |
 | 6 | Dynamical geometry | stability, attractor, trajectories all mouse-invariant | — |
-| **+** | **Functional commitment** | **the one axis selection shapes (~2.2–2.6×, mouse-level *p* = 0.002); no shared mouse-specific pathway signature (#26)** | Yes (generalists flat) |
+| **+** | **Functional commitment** | **the one axis selection shapes (~6.4–6.7×, mouse-level *p* = 0.002; 15 generalist replicates); no shared mouse-specific pathway signature (#26)** | Yes (generalists carry no own-mouse peak) |
 
 **Bottom line:** selection produces robust individual-specific function while leaving no legible trace on any structural, representational, or dynamical axis. Where it does leave a trace — the *strength* of functional sensitivity commitment — even that trace carries no shared mouse-specific pathway signature.
 

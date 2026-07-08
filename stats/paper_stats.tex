@@ -212,15 +212,17 @@
 \newcommand{\statSourceSensitivityBetweenRMean}{0.167}
 \newcommand{\statSourceSensitivityMwP}{0.6919}
 % ----- generalist -----
-\newcommand{\statGeneralistGrandMean}{2.238}
-\newcommand{\statGeneralistMinPerMouse}{1.943}  % smallest per-mouse mean Δfit (mouse: D3)
-\newcommand{\statGeneralistMaxPerMouse}{2.451}  % largest per-mouse mean Δfit (mouse: D5)
-\newcommand{\statGeneralistNReplicates}{6}
+\newcommand{\statGeneralistGrandMean}{2.090}
+\newcommand{\statGeneralistMinPerMouse}{1.768}  % smallest per-mouse mean Δfit (mouse: D3)
+\newcommand{\statGeneralistMaxPerMouse}{2.330}  % largest per-mouse mean Δfit (mouse: D5)
+\newcommand{\statGeneralistNReplicates}{15}
 \newcommand{\statGeneralistNPerm}{10}
-\newcommand{\statGeneralistKruskalH}{13.599}
-\newcommand{\statGeneralistKruskalP}{0.0928}
-\newcommand{\statGeneralistAnovaF}{1.931}
-\newcommand{\statGeneralistAnovaP}{0.0784}
+\newcommand{\statGeneralistKruskalH}{62.318}
+\newcommand{\statGeneralistKruskalP}{\ensuremath{1.6 \times 10^{-10}}}
+\newcommand{\statGeneralistFriedmanChi}{78.6}  % Friedman chi-sq: per-mouse Delta-fit rank order consistent across replicates
+\newcommand{\statGeneralistFriedmanP}{\ensuremath{9.3 \times 10^{-14}}}  % Friedman p (shared intrinsic mouse-difficulty ordering, not own-mouse calibration)
+\newcommand{\statGeneralistAnovaF}{13.377}
+\newcommand{\statGeneralistAnovaP}{\ensuremath{7.1 \times 10^{-14}}}
 \newcommand{\statGeneralistFitnessMin}{0.816}
 \newcommand{\statGeneralistFitnessMax}{0.988}
 \newcommand{\statGeneralistFitnessMean}{0.921}
@@ -343,7 +345,7 @@
 \newcommand{\statSetupNMice}{9}
 \newcommand{\statSetupNReps}{6}  % evolution replicates per mouse
 \newcommand{\statSetupNRuns}{54}  % total per-mouse evolution runs
-\newcommand{\statSetupNGeneralistReps}{6}
+\newcommand{\statSetupNGeneralistReps}{15}
 
 % ============================================================
 % Block 2 — degeneracy analyses (A1-A6)
@@ -403,23 +405,23 @@
 \newcommand{\statDegAfiveMwWithinP}{0.998}  % MW p: within vs between beh dist, random agents
 
 % -- A6: Generalist vs specialist --
-\newcommand{\statDegAsixMwTopoP}{0.856}  % MW p: gen vs spec topology similarity
-\newcommand{\statDegAsixGenTopoMean}{0.276}  % mean topology cosine similarity, generalists
+\newcommand{\statDegAsixMwTopoP}{0.173}  % MW p: gen vs spec topology similarity
+\newcommand{\statDegAsixGenTopoMean}{0.261}  % mean topology cosine similarity, generalists
 \newcommand{\statDegAsixSpecTopoMean}{0.268}  % mean topology cosine similarity, specialists
-\newcommand{\statDegAsixMeanCostPct}{43.1}  % mean-of-ratios generalist fitness cost pct (per-mouse mean)
-\newcommand{\statDegAsixCostRatioOfMeans}{42.1}  % ratio-of-means generalist fitness cost pct (stable summary; primary)
-\newcommand{\statDegAsixMinCostPct}{28.8}  % min per-mouse generalist fitness cost pct
-\newcommand{\statDegAsixMaxCostPct}{81.3}  % max per-mouse generalist fitness cost pct
+\newcommand{\statDegAsixMeanCostPct}{44.3}  % mean-of-ratios generalist fitness cost pct (per-mouse mean)
+\newcommand{\statDegAsixCostRatioOfMeans}{43.6}  % ratio-of-means generalist fitness cost pct (stable summary; primary)
+\newcommand{\statDegAsixMinCostPct}{32.4}  % min per-mouse generalist fitness cost pct
+\newcommand{\statDegAsixMaxCostPct}{72.9}  % max per-mouse generalist fitness cost pct
 \newcommand{\statDegAsixHardestMouse}{D8}  % mouse with highest generalist fitness cost
-\newcommand{\statDegAsixEasiestMouse}{D5}  % mouse with lowest generalist fitness cost
+\newcommand{\statDegAsixEasiestMouse}{B6}  % mouse with lowest generalist fitness cost
 \newcommand{\statDegAsixSpecSensVarMean}{0.230}  % mean sensitivity variance per neuron, specialists
-\newcommand{\statDegAsixGenSensVarMean}{0.089}  % mean sensitivity variance per neuron, generalists (normalized)
-\newcommand{\statDegAsixVarRatio}{2.6}  % sensitivity variance ratio: specialist / generalist (normalized)
-\newcommand{\statDegAsixVarMwP}{0.003}  % MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each
-\newcommand{\statDegAsixVarRatioWithin}{2.2}  % sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)
-\newcommand{\statDegAsixVarBootMedian}{2.1}  % hierarchical-bootstrap median sensitivity variance ratio (seed=1)
-\newcommand{\statDegAsixVarBootCiLo}{1.02}  % hierarchical-bootstrap 2.5pct sensitivity variance ratio
-\newcommand{\statDegAsixVarBootCiHi}{7.36}  % hierarchical-bootstrap 97.5pct sensitivity variance ratio
+\newcommand{\statDegAsixGenSensVarMean}{0.035}  % mean sensitivity variance per neuron, generalists (normalized)
+\newcommand{\statDegAsixVarRatio}{6.7}  % sensitivity variance ratio: specialist / generalist (normalized)
+\newcommand{\statDegAsixVarMwP}{0.001}  % MW p (one-sided spec>gen) for per-neuron sensitivity variance, n=14 each
+\newcommand{\statDegAsixVarRatioWithin}{6.4}  % sensitivity variance ratio, within-mouse-pooled ddof=1 (principled; matches Methods)
+\newcommand{\statDegAsixVarBootMedian}{5.7}  % hierarchical-bootstrap median sensitivity variance ratio (seed=1)
+\newcommand{\statDegAsixVarBootCiLo}{2.88}  % hierarchical-bootstrap 2.5pct sensitivity variance ratio
+\newcommand{\statDegAsixVarBootCiHi}{11.92}  % hierarchical-bootstrap 97.5pct sensitivity variance ratio
 \newcommand{\statDegAsixMouseNPos}{9}  % n mice (of 9) with sensitivity variance > generalist (mouse-level unit)
 \newcommand{\statDegAsixMouseWilcoxP}{0.002}  % one-sample Wilcoxon p, mouse-level sensitivity commitment (primary statistic)
 

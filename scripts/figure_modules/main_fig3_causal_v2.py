@@ -9,7 +9,8 @@ paper_v2 Fig 3 -- Causal necessity vs structural degeneracy (Claims C9-C11).
   C: Dose-response scatter -- specialisation index vs own/other delta_fit ratio.
      More specialised mice show greater permutation specificity.
   D: Generalist control -- delta_fit for generalist / specialist-own / specialist-other.
-     Generalist shows flat profile (KW n.s.); specialist shows own > other.
+     Generalist has no own-mouse peak (mean matches specialist-other level);
+     specialist shows own > other. (15 generalist replicates.)
 
 Output: fig3_causal_v2.pdf
 """
@@ -225,9 +226,13 @@ def _generalist_control_panel(ax, spec: dict, gen_data: dict) -> None:
     y_top = max(np.max(spec_own_c), np.max(spec_other_c))
     bracket(ax, 1, 2, y_top * 1.08, y_top * 0.04, sig_label(wilcox_p_c),
             fontsize=FS_ANNOT)
-    ax.text(0.25, gen_means.mean() + gen_means.std(ddof=1) * 1.3,
-            f'KW: {sig_label(kw_p)}', ha='center', va='bottom',
-            fontsize=FS_ANNOT, color=GEN_COL)
+    # Generalist sits at the specialist-OTHER level with no own-mouse peak; the
+    # per-mouse KW is significant but reflects intrinsic between-mouse disruptability
+    # (shared across replicates), not own-mouse calibration -- so it is NOT annotated
+    # as a generalist "own-mouse" result here (see caption). A dotted line marks the
+    # specialist-other level the generalist mean matches; no text label (see caption).
+    ax.axhline(spec_other_c.mean(), 0.0, 0.33, color=GEN_COL, ls=':', lw=1.0 * LW_SCALE,
+               zorder=1)
 
     ax.set_xticks([0, 1, 2])
     ax.set_xticklabels(c_labels, fontsize=FS_TICK)

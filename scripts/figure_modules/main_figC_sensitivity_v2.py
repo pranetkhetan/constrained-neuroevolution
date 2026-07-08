@@ -6,8 +6,8 @@ paper_v2 New Fig C -- Functional sensitivity commitment (Claims C12-C14).
   B: Fitness cost of generalism per mouse -- horizontal bars, % cost.
   C: Sensitivity variance per neuron -- specialist vs generalist, LOG scale.
      Uses normalized generalist variance (gen_sens_var_norm, apples-to-apples with spec).
-     Mean ratio ~2.6x. Log scale useful: per-neuron values span ~4 orders of magnitude.
-     Individual neuron points shown (14 per group).
+     Mean ratio ~6.5x (15 generalist replicates). Log scale useful: per-neuron values
+     span ~4 orders of magnitude. Individual neuron points shown (14 per group).
   D: Sensitivity variance trajectory over 150 generations: specialist mean (blue) vs
      generalist mean (orange), log scale. Panel C shows the gen-150 endpoint; Panel D
      shows the process. Specialist variance remains elevated above the generalist level
@@ -122,8 +122,8 @@ def _fitness_cost_panel(ax, A6: dict) -> None:
 def _sensitivity_variance_panel(ax, A6: dict) -> None:
     """Panel C: sensitivity variance per neuron, LOG scale.
     Uses normalized generalist variance (gen_sens_var_norm) for apples-to-apples comparison.
-    Mean ratio ~2.6x. Log scale appropriate: per-neuron values span ~4 orders of magnitude.
-    Individual neuron points shown. Ref: seaborn stripplot.
+    Mean ratio ~6.5x (15 generalist replicates). Log scale appropriate: per-neuron values
+    span ~4 orders of magnitude. Individual neuron points shown. Ref: seaborn stripplot.
     """
     spec_var = np.array(A6["spec_sens_var"])       # (14,) normalized sensitivity variance
     gen_var  = np.array(A6["gen_sens_var_norm"])   # (14,) normalized — apples-to-apples
@@ -147,9 +147,9 @@ def _sensitivity_variance_panel(ax, A6: dict) -> None:
     ax.hlines(np.mean(spec_var), -0.25, 0.25, color=EVOLVED_COL, lw=2.0 * LW_SCALE, zorder=4)
     ax.hlines(np.mean(gen_var),   0.75, 1.25, color=GEN_COL,     lw=2.0 * LW_SCALE, zorder=4)
 
-    # Annotate ratio + MW p-value. Report to one decimal (the ':.0f' rounding
-    # mis-displayed 2.58x as "3x"); the caption gives the 2.2-2.6x range and the
-    # mouse-level primary test.
+    # Annotate ratio + MW p-value. Report to one decimal; the caption gives the
+    # within-mouse-pooled-to-across-54 range (macro-driven) and the mouse-level
+    # primary test.
     ratio = np.mean(spec_var) / np.mean(gen_var)
     _, p_mw = mannwhitneyu(spec_var, gen_var, alternative="greater")
     ax.text(0.5, 0.97,
