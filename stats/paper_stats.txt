@@ -312,10 +312,10 @@ Human-readable companion to stats/paper_stats.tex.
   mannwhitney_p                = 0.0066
 
 ## phase3b
-  kw_h                         = 13.599
-  kw_p                         = 0.0928
-  spread_mean                  = 0.604
-  spread_std                   = 0.087
+  kw_h                         = 62.318
+  kw_p                         = \ensuremath{1.6 \times 10^{-10}}
+  spread_mean                  = 0.187
+  spread_std                   = 0.030
   wilcoxon_p                   = 0.0039
   wilcoxon_w                   = 44.0
 

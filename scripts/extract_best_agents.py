@@ -4,7 +4,8 @@ Extract the best gen-150 agents into a single compact pickle (Tier-2 -> Tier-1).
 The full evolutionary record in ``data/agents/`` (54 runs x 150 generations x 500
 agents, ~8.7 GB) is only ever queried by the analysis/figure pipeline for the
 *single best agent per run at the final generation*. This script distils exactly
-those agents (54 per-mouse specialists + 6 generalists) into one ~120 KB pickle.
+those agents (54 per-mouse specialists + all generalist replicates) into one
+compact pickle.
 
 Shipping ``best_agents.pkl`` in the repository lets every figure and analysis that
 calls ``load_best_agent`` run without the 8.7 GB download. The full per-generation
@@ -14,7 +15,7 @@ data is needed only to re-derive the ``analysis/*.pkl`` intermediates from scrat
 Output: ``data/best_agents.pkl``
     {
       'specialists': {(mouse, rep): {'agent': Agent, 'fitness': float}},  # 54
-      'generalists': {rep: {'agent': Agent, 'fitness': float}},           # 6
+      'generalists': {rep: {'agent': Agent, 'fitness': float}},           # all reps (auto-detected)
       'gen': 150,
       'mice': [...],
     }
@@ -69,14 +70,20 @@ def extract():
             agent, fitness = load_best_agent(str(d), GEN)
             specialists[(mouse, rep)] = {"agent": agent, "fitness": float(fitness)}
 
-    # 6 generalists: data/generalist/results_r{0..5}
+    # Generalists: data/generalist/results_r{0..N-1}. The replicate count is
+    # auto-detected (contiguous results_r{rep} from 0) rather than fixed at 6, so
+    # the keystone tracks however many generalist replicates were evolved (6 at
+    # first submission; 15 after the referee-follow-up extension). This keeps
+    # best_agents.pkl and the analysis/*.pkl intermediates on the same n.
     if GENERALIST_DIR.is_dir():
-        for rep in range(0, N_REPS):
+        rep = 0
+        while True:
             d = _run_dir(GENERALIST_DIR, f"results_r{rep}")
             if d is None:
-                continue
+                break
             agent, fitness = load_best_agent(str(d), GEN)
             generalists[rep] = {"agent": agent, "fitness": float(fitness)}
+            rep += 1
 
     return {
         "specialists": specialists,

@@ -138,16 +138,27 @@ def _load_all_mouse_baselines():
     return out
 
 
-def _load_generalist_agents(n_reps):
-    agents, fits = [], []
-    for r in range(n_reps):
-        path = DATA / 'generalist' / f'results_r{r}' / f'gen_{GEN}' / 'summary.pkl'
-        with open(path, 'rb') as f:
-            results = pickle.load(f)
-        best = min(results, key=lambda x: x['fitness'])
-        agents.append(best['agent'])
-        fits.append(float(best['fitness']))
-        print(f'  Rep {r}: best mean-across-9-mice fitness = {best["fitness"]:.4f}')
+def _load_generalist_agents(n_reps=None):
+    """Load generalist best agents from the keystone (data/best_agents.pkl).
+
+    Reading from the keystone (rather than data/generalist/results_r*) guarantees the
+    permutation control uses the SAME generalist agent set as A6_results.pkl -- one
+    coherent dataset -> reproducible + idempotent. ``n_reps`` is ignored; all keystone
+    generalist replicates are used.
+    """
+    ks_path = DATA / 'best_agents.pkl'
+    try:
+        with open(ks_path, 'rb') as f:
+            blob = pickle.load(f)
+    except Exception:
+        import analyze_circuits as _ac
+        blob = _ac._load_pickle_cpu(str(ks_path))
+    gens = blob['generalists']
+    reps = sorted(gens.keys())
+    agents = [gens[r]['agent'] for r in reps]
+    fits = [float(gens[r]['fitness']) for r in reps]
+    for r, f in zip(reps, fits):
+        print(f'  Rep {r}: best mean-across-9-mice fitness = {f:.4f}  (from keystone)')
     return agents, fits
 
 

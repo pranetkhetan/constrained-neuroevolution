@@ -31,6 +31,11 @@ from scipy import stats
 # Paths
 # ---------------------------------------------------------------------------
 BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Ensure the repo root is importable so unpickling Agent objects (core.agent)
+# works when this script is run from anywhere (e.g. `python scripts/supp_analyses.py`).
+for _p in (BASE_DIR, os.path.join(BASE_DIR, 'scripts')):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 ANALYSIS   = os.path.join(BASE_DIR, 'analysis')
 FIGURES    = os.path.join(BASE_DIR, 'figures')
 DATA       = os.path.join(BASE_DIR, 'data')
@@ -830,6 +835,235 @@ def run_A6():
 
 
 # ---------------------------------------------------------------------------
+# A6d - Generalist-vs-specialist degeneracy boundary (produces A6_results.pkl)
+# ---------------------------------------------------------------------------
+#
+# This is the producer for ``analysis/degeneracy_analyses/A6_results.pkl`` -- the
+# generalist boundary-condition analysis behind Figure 5 (fig:sensitivity_commitment):
+# topology diversity, per-neuron ablation-sensitivity variance, and fitness cost of
+# generalism. It was historically produced only in a Colab notebook; folded here so the
+# documented ``supp_analyses.py`` Tier-2 command regenerates it.
+#
+# Provenance: generalist agents are read from ``data/best_agents.pkl`` (the keystone),
+# NOT from ``data/generalist/`` directly, so A6, generalist_results, and the keystone all
+# trace to a single dataset. The replicate count is whatever the keystone holds
+# (6 at first submission; 15 after the referee-follow-up extension). The specialist
+# side is reused from the shipped ``source_sensitivity_results.pkl`` (54 agents unchanged).
+#
+# The sensitivity/topology computation is CPU-only (pure NumPy, seed=42, N_PERM=20);
+# the fitness-cost step needs ``evaluate_batch`` (GPU). On a CPU-only run the fitness/cost
+# arrays are carried forward from the existing pkl with a warning, so the sensitivity
+# result can still be refreshed offline.
+
+_A6D_N_STEPS = 1000
+_A6D_N_PERM = 20
+_A6D_SEED = 42
+_SOURCE_NAMES = ['S0', 'S1', 'S2', 'S3', 'S4', 'S5',
+                 'I0', 'I1', 'I2', 'I3', 'I4', 'I5', 'M0', 'M1']
+
+
+def _a6d_to_numpy(w):
+    return w.get() if hasattr(w, 'get') else np.asarray(w)
+
+
+def _a6d_load_generalists_from_keystone():
+    """Load the generalist best agents (all replicates) from data/best_agents.pkl."""
+    import copy  # noqa: F401  (used by callers)
+    ks_path = os.path.join(DATA, 'best_agents.pkl')
+    blob = _load_pickle(ks_path)
+    gens = blob['generalists']
+    reps = sorted(gens.keys())
+    agents = [gens[r]['agent'] for r in reps]
+    return agents
+
+
+def _a6d_fixed_sequence():
+    rng = np.random.default_rng(_A6D_SEED)
+    t = np.linspace(0, 10 * np.pi, _A6D_N_STEPS)
+    seq = np.column_stack([
+        0.5 + 0.4 * np.sin(t * 0.7),
+        0.3 + 0.3 * np.sin(t * 1.1 + 1),
+        0.3 + 0.3 * np.cos(t * 1.1),
+        0.2 + 0.2 * np.sin(t * 0.5),
+        0.1 * np.sin(t * 0.9),
+        0.05 * rng.standard_normal(_A6D_N_STEPS),
+    ])
+    return seq, rng
+
+
+def _a6d_run_sequence(agent, seq):
+    import numpy as _np
+    w = _a6d_to_numpy(agent.weights)
+    state = _np.zeros(14)
+    out = []
+    for s in seq:
+        state[:6] = s
+        state[6:] = _np.tanh(state @ w)[6:]
+        out.append(state[12:14].copy())
+    return _np.array(out)
+
+
+def _a6d_permute_source(agent, src_idx, rng):
+    import copy
+    a = copy.deepcopy(agent)
+    a.weights = _a6d_to_numpy(a.weights)
+    row = a.weights[src_idx].copy()
+    nz = np.where(row != 0)[0]
+    if len(nz) > 1:
+        perm = rng.permutation(nz.copy())
+        new_row = np.zeros_like(row)
+        for old_t, new_t in zip(nz, perm):
+            new_row[new_t] = row[old_t]
+        a.weights[src_idx] = new_row
+    return a
+
+
+def _a6d_permute_all(agent, rng):
+    import copy
+    a = copy.deepcopy(agent)
+    a.weights = _a6d_to_numpy(a.weights)
+    for src in range(14):
+        row = a.weights[src].copy()
+        nz = np.where(row != 0)[0]
+        if len(nz) > 1:
+            perm = rng.permutation(nz.copy())
+            new_row = np.zeros_like(row)
+            for old_t, new_t in zip(nz, perm):
+                new_row[new_t] = row[old_t]
+            a.weights[src] = new_row
+    return a
+
+
+def run_A6_degeneracy(config_path='config.yaml'):
+    """Produce analysis/degeneracy_analyses/A6_results.pkl from the keystone agents.
+
+    References:
+        Fig 5 (fig:sensitivity_commitment); Methods A6. Sensitivity protocol is the
+        per-source ablation MSE normalized by the full-circuit permutation baseline.
+    """
+    print('\n=== A6d: Generalist degeneracy boundary (A6_results.pkl) ===')
+    out_dir = os.path.join(ANALYSIS, 'degeneracy_analyses')
+    os.makedirs(out_dir, exist_ok=True)
+    a6_path = os.path.join(out_dir, 'A6_results.pkl')
+
+    # ---- specialist side: reuse shipped intermediates (54 agents unchanged) ----
+    SS = _load_pickle(os.path.join(ANALYSIS, 'source_sensitivity_results.pkl'))
+    spec_sens_matrix = np.asarray(SS['sensitivity_matrix'], float)   # (54,14)
+    spec_sens_var = spec_sens_matrix.var(axis=0)                     # (14,)
+
+    prev = _load_pickle(a6_path) if os.path.exists(a6_path) else {}
+    spec_topo_sims = np.asarray(prev.get('spec_topo_sims', []), float)  # unchanged
+
+    # ---- generalist side: recompute over the keystone replicate set ----
+    gen_agents = _a6d_load_generalists_from_keystone()
+    N_GEN = len(gen_agents)
+    print(f'  Loaded {N_GEN} generalist agents from best_agents.pkl')
+
+    W_gen = np.array([_a6d_to_numpy(a.weights) for a in gen_agents])   # (N,14,14)
+    gen_topo = (W_gen != 0).astype(float).reshape(N_GEN, -1)
+    gen_topo_sims = np.array([_cosine_sim(gen_topo[i], gen_topo[j])
+                              for i in range(N_GEN) for j in range(i + 1, N_GEN)])
+    if spec_topo_sims.size:
+        _, mw_p_gen_spec_topo = stats.mannwhitneyu(
+            spec_topo_sims, gen_topo_sims, alternative='two-sided')
+    else:
+        mw_p_gen_spec_topo = float('nan')
+
+    # sensitivity (per-source ablation) + full-circuit normalisation -- CPU
+    print('  Computing generalist sensitivity profiles (CPU)...')
+    seq, rng = _a6d_fixed_sequence()
+    gen_sensitivity = np.zeros((N_GEN, 14))
+    for ai, agent in enumerate(gen_agents):
+        base = _a6d_run_sequence(agent, seq)
+        for src in range(14):
+            mses = [np.mean((_a6d_run_sequence(_a6d_permute_source(agent, src, rng), seq) - base) ** 2)
+                    for _ in range(_A6D_N_PERM)]
+            gen_sensitivity[ai, src] = np.mean(mses)
+    gen_sens_var = gen_sensitivity.var(axis=0)
+
+    gen_full_circuit_baselines = np.zeros(N_GEN)
+    for ai, agent in enumerate(gen_agents):
+        base = _a6d_run_sequence(agent, seq)
+        mses = [np.mean((_a6d_run_sequence(_a6d_permute_all(agent, rng), seq) - base) ** 2)
+                for _ in range(_A6D_N_PERM)]
+        gen_full_circuit_baselines[ai] = np.mean(mses)
+
+    gen_sensitivity_norm = gen_sensitivity.copy().astype(float)
+    for ai in range(N_GEN):
+        b = gen_full_circuit_baselines[ai]
+        gen_sensitivity_norm[ai] = gen_sensitivity_norm[ai] / b if b > 1e-12 else 0.0
+    gen_sens_var_norm = gen_sensitivity_norm.var(axis=0)
+
+    ratio = spec_sens_var.mean() / gen_sens_var_norm.mean() if gen_sens_var_norm.mean() > 0 else float('inf')
+    print(f'  Specialist norm sens var: {spec_sens_var.mean():.6f}  '
+          f'Generalist: {gen_sens_var_norm.mean():.6f}  ratio: {ratio:.2f}x')
+
+    # fitness / cost -- needs evaluate_batch (GPU). Carry forward on CPU-only.
+    try:
+        from utils.backend import HAS_GPU
+    except Exception:
+        HAS_GPU = False
+    A6_gen_fitness = np.asarray(prev.get('gen_fitness_matrix', np.full((N_GEN, len(MICE)), np.nan)))
+    gen_mean_per_mouse = np.asarray(prev.get('gen_mean_per_mouse', np.full(len(MICE), np.nan)))
+    gen_cost_pct = np.asarray(prev.get('gen_cost_pct', np.full(len(MICE), np.nan)))
+    if HAS_GPU:
+        print('  Computing generalist fitness/cost (GPU)...')
+        from config import load_config
+        from core.simulation import Simulation
+        from core.fitness import evaluate_batch
+        from utils.backend import xp
+        cfg = load_config(config_path)
+        sim = Simulation(cfg.physics)
+        n_bouts, max_frames = cfg.simulation.n_bouts, cfg.simulation.max_frames
+        noise = np.zeros((n_bouts, max_frames))
+        for s in range(n_bouts):
+            noise[s] = np.random.RandomState(s).uniform(-1, 1, size=max_frames)
+        noise = xp.array(noise)
+        # per-mouse baselines
+        bl = {}
+        for m in MICE:
+            d = _load_pickle(os.path.join(DATA, f'mouse_{m}_metrics.pkl'))
+            bl[m] = {'node_pdf': d.get('node_pdf'), 'revisit_rate': d.get('reversal_rate'),
+                     'straightness': d.get('straightness'), 'turn_bias': d.get('turn_bias'),
+                     'markov_profile': d.get('markov_profile'), 'physics': d.get('physics', {})}
+        A6_gen_fitness = np.full((N_GEN, len(MICE)), np.nan)
+        for j, m in enumerate(MICE):
+            res = evaluate_batch(gen_agents, sim, cfg, bl[m], noise)
+            A6_gen_fitness[:, j] = [r.total for r in res]
+        gen_mean_per_mouse = A6_gen_fitness.mean(axis=0)
+        # specialist own-mouse reference: recover from prior pkl (unchanged specialists)
+        prev_gmp = np.asarray(prev.get('gen_mean_per_mouse', gen_mean_per_mouse), float)
+        prev_cost = np.asarray(prev.get('gen_cost_pct', np.zeros(len(MICE))), float)
+        spec_own = prev_gmp / (1.0 + prev_cost / 100.0)
+        gen_cost_pct = (gen_mean_per_mouse - spec_own) / spec_own * 100.0
+        print(f'  Generalist cost (mean-of-ratios): {gen_cost_pct.mean():.1f}%')
+    else:
+        print('  [WARN] No GPU: fitness/cost carried forward from existing pkl '
+              '(sensitivity/topology updated). Re-run on GPU to refresh cost.')
+
+    A6_results = {
+        'N_REPS_G': N_GEN,
+        'W_gen': W_gen,
+        'gen_topo_sims': gen_topo_sims,
+        'spec_topo_sims': spec_topo_sims,
+        'mw_p_gen_spec_topo': float(mw_p_gen_spec_topo),
+        'gen_fitness_matrix': A6_gen_fitness,
+        'gen_mean_per_mouse': gen_mean_per_mouse,
+        'gen_cost_pct': gen_cost_pct,
+        'gen_sensitivity': gen_sensitivity,
+        'gen_sensitivity_norm': gen_sensitivity_norm,
+        'gen_full_circuit_baselines': gen_full_circuit_baselines,
+        'spec_sens_var': spec_sens_var,
+        'gen_sens_var': gen_sens_var,
+        'gen_sens_var_norm': gen_sens_var_norm,
+    }
+    with open(a6_path, 'wb') as f:
+        pickle.dump(A6_results, f)
+    print(f'  Saved -> {a6_path}  (N_REPS_G={N_GEN})')
+    return A6_results
+
+
+# ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
 
@@ -840,6 +1074,7 @@ ANALYSES = {
     'A4': run_A4,
     'A5': run_A5,
     'A6': run_A6,
+    'A6d': run_A6_degeneracy,
 }
 
 
