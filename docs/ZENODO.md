@@ -11,7 +11,7 @@ intermediates** or **audit the full evolutionary runs**.
 | Include in Zenodo | Size | Source path |
 |-------------------|------|-------------|
 | Full per-mouse agent runs (54 dirs × 150 generations) | ~8.7 GB | `data/agents/` |
-| Full generalist runs (6 dirs × 150 generations) | ~986 MB | `data/generalist/` |
+| Full generalist runs (15 dirs × 150 generations) | ~2.5 GB | `data/generalist/` |
 | Full per-frame activations (all 54 agents) | ~116 MB | `analysis/activity_embeddings/B_results.pkl` |
 
 **Do NOT upload:**
@@ -37,7 +37,7 @@ constrained-neuroevolution-data-v1/
 │   │   ├── results_B5_r1/ ... results_D9_r6/      (54 dirs, gen_1 … gen_150 each)
 │   │   └── ...
 │   └── generalist/
-│       └── results_r0/ ... results_r5/            (6 dirs)
+│       └── results_r0/ ... results_r14/           (15 dirs)
 └── analysis/
     └── activity_embeddings/
         └── B_results.pkl                          (full, ~116 MB)
@@ -65,7 +65,7 @@ cp -r data/generalist  "$STAGE/data/"
 cp analysis/activity_embeddings/B_results.pkl "$STAGE/analysis/activity_embeddings/"
 
 # 3. zip (split into parts if the host limits single-file size)
-#    Zenodo allows up to 50 GB per record; a single zip is fine here (~9 GB).
+#    Zenodo allows up to 50 GB per record; a single zip is fine here (~11 GB).
 zip -r -s 0 "$STAGE.zip" "$STAGE"
 sha256sum "$STAGE.zip" > "$STAGE.zip.sha256"
 ```

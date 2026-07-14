@@ -62,10 +62,10 @@ clone-able while remaining fully reproducible, the artifacts are split by what t
 | All code (`core/ utils/ scripts/`) | small | **repo** | the pipeline itself |
 | Manuscript (`paper_v2/`, `stats/`, `figures/`) | ~30 MB | **repo** | the paper + regenerable figures |
 | Per-mouse metrics (`data/mouse_*_metrics.pkl`) | ~40 KB | **repo** | inputs to evolution; tiny, derived |
-| **`data/best_agents.pkl`** (54 specialists + 6 generalists, gen 150) | ~130 KB | **repo** | the *only* part of the 8.7 GB agent archive the pipeline reads |
+| **`data/best_agents.pkl`** (54 specialists + 15 generalists, gen 150) | ~150 KB | **repo** | the *only* part of the 8.7 GB agent archive the pipeline reads |
 | `analysis/*.pkl` intermediates | ~35 MB | **repo** | precomputed Tier-1 inputs for figures/stats |
 | **Slim** `B_results.pkl` (derived results + 4 highlighted agents' activations) | ~9 MB | **repo** | enough for every embedding figure |
-| Full `data/agents/` + `data/generalist/` (all generations, all agents) | ~9.7 GB | **Zenodo** | only needed to re-derive `analysis/*.pkl` or audit full runs |
+| Full `data/agents/` + `data/generalist/` (all generations, all agents) | ~11 GB | **Zenodo** | only needed to re-derive `analysis/*.pkl` or audit full runs |
 | Full `B_results.pkl` (per-frame activations, all 54 agents) | ~116 MB | **Zenodo** | only needed to recompute embedding intermediates from scratch |
 | Raw Rosenberg trajectories | — | **not redistributed** | license; fetch from the original source |
 
@@ -100,7 +100,7 @@ pytest tests/
 
 ### The `best_agents.pkl` keystone
 
-`data/best_agents.pkl` (~130 KB) holds the 54 specialist + 6 generalist gen-150 best
+`data/best_agents.pkl` (~150 KB) holds the 54 specialist + 15 generalist gen-150 best
 agents — everything the figure/analysis pipeline ever reads from the full 8.7 GB
 evolutionary archive. This is why Tier 1 needs no large download. It was produced from
 the full archive by `scripts/extract_best_agents.py`.
